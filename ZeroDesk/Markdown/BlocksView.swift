@@ -11,7 +11,7 @@ struct BlocksView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
-            ForEach(blocks.indices, id: \.self) { BlockView(markup: blocks[$0]) }
+            ForEach(blocks.indices, id: \.self) { BlockView(markup: blocks[$0], nested: false) }
         }
         .frame(maxWidth: 680, alignment: .leading)
     }
@@ -19,6 +19,8 @@ struct BlocksView: View {
 
 private struct BlockView: View {
     let markup: Markup
+    /// 목록·인용 안이면 굵은 글씨 문단 배경을 넣지 않는다 (카드 안 상자 겹침 방지).
+    var nested = true
     @Environment(VaultStore.self) private var store
 
     var body: some View {
@@ -26,7 +28,7 @@ private struct BlockView: View {
         case let p as Paragraph:
             if p.childCount == 1, let img = p.child(at: 0) as? Markdown.Image {
                 VaultImage(source: img.source ?? "", alt: img.plainText)
-            } else if p.child(at: 0) is Strong {
+            } else if !nested, p.child(at: 0) is Strong {
                 text(p).padding(10).frame(maxWidth: .infinity, alignment: .leading)
                     .background(.tint.opacity(0.07), in: .rect(cornerRadius: 8))
             } else {
@@ -48,8 +50,7 @@ private struct BlockView: View {
             .background(.secondary.opacity(0.08), in: .rect(cornerRadius: 8))
         case let c as CodeBlock:
             ScrollView(.horizontal) {
-                Text(c.code.hasSuffix("\n") ? String(c.code.dropLast()) : c.code)
-                    .font(.system(.callout, design: .monospaced))
+                Text(MonoGrid.text(c.code.hasSuffix("\n") ? String(c.code.dropLast()) : c.code))
                     .fixedSize()
                     .padding(12)
             }

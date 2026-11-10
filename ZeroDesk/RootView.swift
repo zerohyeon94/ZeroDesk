@@ -32,6 +32,9 @@ struct RootView: View {
             }
         }
         .task {
+            #if DEBUG
+            tab = UserDefaults.standard.integer(forKey: "startTab")  // 시뮬레이터 확인용: -startTab 1
+            #endif
             await store.start()
             started = true
         }

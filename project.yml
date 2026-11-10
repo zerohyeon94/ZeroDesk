@@ -50,3 +50,25 @@ targets:
           - UIInterfaceOrientationPortraitUpsideDown
           - UIInterfaceOrientationLandscapeLeft
           - UIInterfaceOrientationLandscapeRight
+
+  ZeroDeskTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - ZeroDeskTests
+    dependencies:
+      - target: ZeroDesk
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        DEVELOPMENT_TEAM: 5G6N83PM9C
+
+schemes:
+  ZeroDesk:
+    build:
+      targets:
+        ZeroDesk: all
+        ZeroDeskTests: [test]
+    test:
+      targets:
+        - ZeroDeskTests

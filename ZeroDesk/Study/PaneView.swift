@@ -28,7 +28,8 @@ struct PaneView: View {
             NavigationStack {
                 FileBrowserView { path in
                     root = path
-                    stack = []
+                    // iPhone 칸은 root가 비어 있는 상수라 파일을 스택에 넣어 연다.
+                    stack = root == path ? [] : [Route(path: path)]
                     switching = false
                 }
                 .navigationTitle("파일 바꾸기")

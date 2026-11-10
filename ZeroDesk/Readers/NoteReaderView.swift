@@ -8,8 +8,15 @@ struct NoteReaderView: View {
     var heading: String?
     @Environment(VaultStore.self) private var store
     @State private var current = 0
-    @State private var tops: [Int: CGFloat] = [:]
+    /// 절 위치는 화면을 다시 그리지 않도록 참조 상자에 둔다 (스크롤 매 프레임 갱신).
+    @State private var tops = Tops()
+    final class Tops { var values: [Int: CGFloat] = [:] }
     @State private var restored = false
+
+    /// 화면 위에서 100pt 안으로 올라온 마지막 절이 지금 절이다.
+    static func currentSection(_ tops: [Int: CGFloat]) -> Int {
+        tops.filter { $0.value <= 100 }.max { $0.key < $1.key }?.key ?? 0
+    }
 
     private var titled: [NoteSection] { doc.sections.filter { !$0.title.isEmpty } }
 
@@ -23,7 +30,11 @@ struct NoteReaderView: View {
                     ForEach(doc.sections) { section in
                         sectionView(section, proxy: proxy)
                             .id(section.id)
-                            .onGeometryChange(for: CGFloat.self) { $0.frame(in: .scrollView).minY } action: { tops[section.id] = $0 }
+                            .onGeometryChange(for: CGFloat.self) { $0.frame(in: .scrollView).minY } action: {
+                                tops.values[section.id] = $0
+                                let now = Self.currentSection(tops.values)
+                                if now != current { current = now }
+                            }
                     }
                 }
                 .padding(.horizontal, 24).padding(.vertical, 20)
@@ -32,11 +43,6 @@ struct NoteReaderView: View {
             }
             .safeAreaInset(edge: .top, spacing: 0) {
                 if titled.count > 1 { sectionBar(proxy) }
-            }
-            .onChange(of: tops) { _, t in
-                // 화면 위에서 100pt 안으로 올라온 마지막 절이 지금 절이다.
-                let now = t.filter { $0.value <= 100 }.max { $0.key < $1.key }?.key ?? 0
-                if now != current { current = now }
             }
             .onChange(of: current) { _, c in if restored { store.setLastSection(c, of: path) } }
             .task(id: path) {

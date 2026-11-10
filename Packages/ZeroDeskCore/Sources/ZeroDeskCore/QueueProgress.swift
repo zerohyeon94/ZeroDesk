@@ -18,6 +18,11 @@ public struct QueueMonth: Equatable, Codable, Sendable {
     public var month: String
     public var theme: String
     public var groups: [QueueGroup]
+
+    public init(month: String, theme: String, groups: [QueueGroup]) {
+        (self.month, self.theme, self.groups) = (month, theme, groups)
+    }
+
     public var done: Int { groups.map(\.done).reduce(0, +) }
     public var total: Int { groups.map(\.total).reduce(0, +) }
     /// 링크가 붙은 미완료 항목 중 마지막 것 = 오늘 개념.

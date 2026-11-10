@@ -29,13 +29,18 @@ struct HomeView: View {
         .refreshable { await store.refresh() }
     }
 
+    private var monthKey: String {
+        let t = todayKST()
+        return String(format: "%04d-%02d", t.year ?? 0, t.month ?? 0)
+    }
+
     // MARK: 왼쪽
 
     @ViewBuilder private func gauge(_ h: HomeSnapshot) -> some View {
         Card {
             if h.queueUnreadable {
                 Button("형식을 읽지 못함 · 파일 열기") { openInStudy(HomeSnapshot.queuePath) }
-            } else if let m = h.month {
+            } else if let m = h.month(for: monthKey) {
                 let t = todayKST()
                 let pace = MonthPace.make(remainingItems: m.total - m.done, today: t, calendar: kstCalendar)
                 Text("\(t.month ?? 0)월 · \(m.theme)").font(.headline)
@@ -62,7 +67,7 @@ struct HomeView: View {
     }
 
     @ViewBuilder private func today(_ h: HomeSnapshot) -> some View {
-        let path = h.month?.currentLink.flatMap(store.index.resolve)
+        let path = h.month(for: monthKey)?.currentLink.flatMap(store.index.resolve)
         Card {
             Text("오늘 개념").font(.subheadline.bold()).foregroundStyle(.secondary)
             if let path {

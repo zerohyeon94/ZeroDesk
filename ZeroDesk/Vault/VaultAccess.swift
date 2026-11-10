@@ -44,6 +44,11 @@ final class VaultAccess: @unchecked Sendable {
 
     /// `.md`와 그림 파일만, 숨김 폴더·파일 제외, 경로순. 아직 안 내려온 iCloud 자리표시(`.x.md.icloud`)는 진짜 이름으로 센다.
     func listFiles(in root: URL) throws -> [VaultFileInfo] {
+        var isDir: ObjCBool = false
+        // enumerator는 없는 폴더에도 nil을 주지 않으므로 먼저 확인한다.
+        guard FileManager.default.fileExists(atPath: root.path, isDirectory: &isDir), isDir.boolValue else {
+            throw VaultError.accessLost
+        }
         let base = root.resolvingSymlinksInPath().path + "/"
         let keys: [URLResourceKey] = [.contentModificationDateKey, .isDirectoryKey]
         guard let e = FileManager.default.enumerator(at: root, includingPropertiesForKeys: keys, options: [.skipsPackageDescendants])
@@ -90,6 +95,9 @@ final class VaultAccess: @unchecked Sendable {
         return try result.get()
     }
 
+    /// 로컬 사본이 전혀 없을 때만 기다린다. 옛 사본(.downloaded)은 바로 읽고 새 내용은 뒤에서 받는다.
+    static func mustWait(for status: URLUbiquitousItemDownloadingStatus?) -> Bool { status == .notDownloaded }
+
     private func ensureDownloaded(_ url: URL, timeout: Duration) async throws {
         func status() -> URLUbiquitousItemDownloadingStatus? {
             var u = url
@@ -98,7 +106,9 @@ final class VaultAccess: @unchecked Sendable {
             guard v?.isUbiquitousItem == true else { return nil }
             return v?.ubiquitousItemDownloadingStatus
         }
-        guard let s = status(), s != .current else { return }
+        let s = status()
+        if s == .downloaded { try? FileManager.default.startDownloadingUbiquitousItem(at: url) }
+        guard Self.mustWait(for: s) else { return }
         try? FileManager.default.startDownloadingUbiquitousItem(at: url)
         let clock = ContinuousClock()
         let deadline = clock.now + timeout

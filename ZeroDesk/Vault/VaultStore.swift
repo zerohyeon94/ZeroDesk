@@ -15,22 +15,35 @@ struct HomeSnapshot: Codable, Equatable {
     static let schedulePath = "Schedule/주요 일정.md"
 
     /// 대기열·월별 목표·주요 일정 세 파일만 읽어 홈 숫자를 만든다.
-    static func make(paths: [String], month: String, read: @Sendable (String) async throws -> String) async -> HomeSnapshot {
+    /// 이번 달 것일 때만 대기열 숫자를 준다 (월초 지난 값이 이번 달처럼 보이지 않게).
+    func month(for key: String) -> QueueMonth? { month?.month == key ? month : nil }
+
+    /// 읽기 실패(iCloud·오프라인)는 형식 오류와 다르다. `previous`가 있으면 그 칸의 지난 값을 유지한다.
+    static func make(paths: [String], month: String, previous: HomeSnapshot? = nil,
+                     read: @Sendable (String) async throws -> String) async -> HomeSnapshot {
         var s = HomeSnapshot(month: nil, monthSectionMissing: false, queueUnreadable: false,
                              yearGoal: nil, schedule: nil, scheduleMissing: !paths.contains(schedulePath))
-        if paths.contains(queuePath), let text = try? await read(queuePath) {
+        if !paths.contains(queuePath) {
+            s.queueUnreadable = true
+        } else if let text = try? await read(queuePath) {
             s.month = QueueProgress.parse(text, month: month)
             s.monthSectionMissing = s.month == nil
             if s.month?.total == 0 { s.queueUnreadable = true }
+        } else if let previous {
+            (s.month, s.monthSectionMissing, s.queueUnreadable) = (previous.month, previous.monthSectionMissing, previous.queueUnreadable)
         } else {
             s.queueUnreadable = true
         }
         if let goal = paths.filter({ $0.hasPrefix("Schedule/월별 목표 (") }).max(),
            let text = try? await read(goal) {
             s.yearGoal = YearGoal.line(in: text)
+        } else {
+            s.yearGoal = previous?.yearGoal
         }
         if !s.scheduleMissing {
-            if let text = try? await read(schedulePath) { s.schedule = ScheduleFile.parse(text) } else { s.scheduleMissing = true }
+            if let text = try? await read(schedulePath) { s.schedule = ScheduleFile.parse(text) }
+            else if let previous { (s.schedule, s.scheduleMissing) = (previous.schedule, previous.scheduleMissing) }
+            else { s.scheduleMissing = true }
         }
         return s
     }
@@ -110,7 +123,7 @@ final class VaultStore {
             apply(files: list)
             let t = todayKST()
             let month = String(format: "%04d-%02d", t.year ?? 0, t.month ?? 0)
-            home = await HomeSnapshot.make(paths: list.map(\.path), month: month) { path in
+            home = await HomeSnapshot.make(paths: list.map(\.path), month: month, previous: home) { path in
                 try await access.readText(path, root: root)
             }
             phase = .ready

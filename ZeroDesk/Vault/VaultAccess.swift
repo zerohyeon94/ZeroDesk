@@ -72,12 +72,20 @@ final class VaultAccess: @unchecked Sendable {
 
     /// iCloud에 아직 없으면 내려받기를 요청하고 기다린 뒤, 조정 읽기로 글을 읽는다.
     func readText(_ relPath: String, root: URL, timeout: Duration = .seconds(30)) async throws -> String {
+        guard let s = String(data: try await readData(relPath, root: root, timeout: timeout), encoding: .utf8) else {
+            throw VaultError.unreadable
+        }
+        return s
+    }
+
+    /// 그림처럼 글이 아닌 파일도 같은 방식(내려받기 + 조정 읽기)으로 읽는다.
+    func readData(_ relPath: String, root: URL, timeout: Duration = .seconds(30)) async throws -> Data {
         let url = fileURL(relPath, root: root)
         try await ensureDownloaded(url, timeout: timeout)
         var coordError: NSError?
-        var result: Result<String, VaultError> = .failure(.unreadable)
+        var result: Result<Data, VaultError> = .failure(.unreadable)
         NSFileCoordinator().coordinate(readingItemAt: url, options: [], error: &coordError) { u in
-            if let s = try? String(contentsOf: u, encoding: .utf8) { result = .success(s) }
+            if let d = try? Data(contentsOf: u) { result = .success(d) }
         }
         return try result.get()
     }

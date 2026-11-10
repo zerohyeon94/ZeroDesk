@@ -134,6 +134,11 @@ final class VaultStore {
         return try await access.readText(path, root: root)
     }
 
+    func data(of path: String) async throws -> Data {
+        guard let root else { throw VaultError.noFolder }
+        return try await access.readData(path, root: root)
+    }
+
     func fileURL(_ path: String) -> URL? { root.map { access.fileURL(path, root: $0) } }
 
     func lastSection(of path: String) -> Int { access.defaults.integer(forKey: "lastSection." + path) }

@@ -1,0 +1,52 @@
+name: ZeroDesk
+
+options:
+  bundleIdPrefix: com.zerohyeon
+  deploymentTarget:
+    iOS: "18.0"
+  defaultConfig: Debug
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+
+packages:
+  ZeroDeskCore:
+    path: Packages/ZeroDeskCore
+
+targets:
+  ZeroDesk:
+    type: application
+    platform: iOS
+    sources:
+      - ZeroDesk
+    dependencies:
+      - package: ZeroDeskCore
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.zerohyeon.zerodesk
+        INFOPLIST_FILE: ZeroDesk/Resources/Info.plist
+        TARGETED_DEVICE_FAMILY: "1,2"
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: 5G6N83PM9C
+    info:
+      path: ZeroDesk/Resources/Info.plist
+      properties:
+        CFBundleDisplayName: ZeroDesk
+        CFBundleName: ZeroDesk
+        CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
+        LSRequiresIPhoneOS: true
+        LSSupportsOpeningDocumentsInPlace: true
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight

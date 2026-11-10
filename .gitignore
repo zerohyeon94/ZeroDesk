@@ -1,0 +1,6 @@
+ZeroDesk.xcodeproj/
+.build/
+DerivedData/
+.superpowers/
+.swiftpm/
+*.xcuserstate

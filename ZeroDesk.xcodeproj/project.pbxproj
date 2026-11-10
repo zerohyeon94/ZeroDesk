@@ -1,0 +1,569 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		38FF01E876DF14BE10C456B4 /* VaultStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 439F27B2B4C2F019A1AFEA1B /* VaultStore.swift */; };
+		3983B4FF083E5A257D9B1D76 /* ZeroDeskCore in Frameworks */ = {isa = PBXBuildFile; productRef = 8420563B8ED2BD83656B3C2D /* ZeroDeskCore */; };
+		3A511BC00F1E5B816C5429AE /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF4A922AEE95641E610A171D /* HomeView.swift */; };
+		42307BF1EA9F06EAB012CCA0 /* InlineText.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB70B76D4160D0A30E99236 /* InlineText.swift */; };
+		47FCCC41CF542448C14A0ABC /* BlocksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79C48DBCF9A3AA5BE8319237 /* BlocksView.swift */; };
+		634099E1C585B5D496B768F5 /* NoteReaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8BB81E8DB2E6BC7A33A59B6 /* NoteReaderView.swift */; };
+		637AEAC4530A25CE4D2389B7 /* VaultAccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37E31110F1963C692E99A299 /* VaultAccess.swift */; };
+		7DA2C2723AEDC9A920DAD2F2 /* ReviewFixTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED590A8BCFEADF62A191B96A /* ReviewFixTests.swift */; };
+		8285AAA2E057C16AAF45CE7F /* MonoGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C30BFAE6F12C0B36B9E7C14 /* MonoGrid.swift */; };
+		926DBC9BCA6A291256C5F570 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20545B01CD23AFFA9651547D /* RootView.swift */; };
+		984DAB1A7D210626A9CC33F3 /* ZeroDeskApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5DC6763D9FEFB501CBEA5B6 /* ZeroDeskApp.swift */; };
+		998A895699AA21933BBF4B51 /* VaultAccessTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0A77995EC741F690F86099F /* VaultAccessTests.swift */; };
+		B110AAF96741F7BD897F0D0F /* PaneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664C8274E24556112089EB40 /* PaneView.swift */; };
+		B5031FAEF300F3924E03BB90 /* StudyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372559A6DADA29FB78C6C7CD /* StudyView.swift */; };
+		B669541149D7520C7D68F447 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8538575727021B417050653 /* SettingsView.swift */; };
+		CBECD6A50F6D636A360F9670 /* MonoGridTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9B745D9A7E495409A54451F /* MonoGridTests.swift */; };
+		D36D1ED4FD8AF633651612BC /* SwiftUINames.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96A75E03785D12D597E33AD /* SwiftUINames.swift */; };
+		D5B586E08F3DC02CD750023B /* DailyCardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96BFF92A0EEB5D29852E44F /* DailyCardsView.swift */; };
+		E8636E713BF2B4F9A79D569A /* FileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6495655B1BA09334D7C321EF /* FileView.swift */; };
+		F37689443AE60AA4DD1A6CDD /* QueueProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E1981416E11E356AD482AC /* QueueProgressView.swift */; };
+		FD67E5D0F5742CFA4DB7FBD9 /* FileBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74D4206D41017093237D4137 /* FileBrowserView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		677CEF9004C2B5678AF479C8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 5E11EA56C58165907CB30F4D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7EB993AC0C2ED2533B8622AC;
+			remoteInfo = ZeroDesk;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		20545B01CD23AFFA9651547D /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		304EF460ED3135A52419487A /* ZeroDesk.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = ZeroDesk.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		372559A6DADA29FB78C6C7CD /* StudyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudyView.swift; sourceTree = "<group>"; };
+		37E31110F1963C692E99A299 /* VaultAccess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VaultAccess.swift; sourceTree = "<group>"; };
+		424CEC74F64B16C342E0F297 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		439F27B2B4C2F019A1AFEA1B /* VaultStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VaultStore.swift; sourceTree = "<group>"; };
+		6495655B1BA09334D7C321EF /* FileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileView.swift; sourceTree = "<group>"; };
+		664C8274E24556112089EB40 /* PaneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaneView.swift; sourceTree = "<group>"; };
+		74D4206D41017093237D4137 /* FileBrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileBrowserView.swift; sourceTree = "<group>"; };
+		79C48DBCF9A3AA5BE8319237 /* BlocksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlocksView.swift; sourceTree = "<group>"; };
+		8C30BFAE6F12C0B36B9E7C14 /* MonoGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonoGrid.swift; sourceTree = "<group>"; };
+		9A1EED4748F25CB35517C9B3 /* ZeroDeskCore */ = {isa = PBXFileReference; lastKnownFileType = folder; name = ZeroDeskCore; path = Packages/ZeroDeskCore; sourceTree = SOURCE_ROOT; };
+		A8538575727021B417050653 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		BAB70B76D4160D0A30E99236 /* InlineText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlineText.swift; sourceTree = "<group>"; };
+		BF4A922AEE95641E610A171D /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		C5DC6763D9FEFB501CBEA5B6 /* ZeroDeskApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZeroDeskApp.swift; sourceTree = "<group>"; };
+		C8BB81E8DB2E6BC7A33A59B6 /* NoteReaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteReaderView.swift; sourceTree = "<group>"; };
+		C96BFF92A0EEB5D29852E44F /* DailyCardsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyCardsView.swift; sourceTree = "<group>"; };
+		D563629360D5D08E6FB4045D /* ZeroDeskTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = ZeroDeskTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D9E1981416E11E356AD482AC /* QueueProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueueProgressView.swift; sourceTree = "<group>"; };
+		E0A77995EC741F690F86099F /* VaultAccessTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VaultAccessTests.swift; sourceTree = "<group>"; };
+		ED590A8BCFEADF62A191B96A /* ReviewFixTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewFixTests.swift; sourceTree = "<group>"; };
+		F96A75E03785D12D597E33AD /* SwiftUINames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUINames.swift; sourceTree = "<group>"; };
+		F9B745D9A7E495409A54451F /* MonoGridTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonoGridTests.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		03D3B49E8E60E38188F6D04B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3983B4FF083E5A257D9B1D76 /* ZeroDeskCore in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		079D48AA63673CD4C3E83CED /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				9A1EED4748F25CB35517C9B3 /* ZeroDeskCore */,
+			);
+			path = Packages;
+			sourceTree = "<group>";
+		};
+		193404E1185B13F76F0EBA03 = {
+			isa = PBXGroup;
+			children = (
+				079D48AA63673CD4C3E83CED /* Packages */,
+				DB58125D4BA05B265B89F232 /* ZeroDesk */,
+				D797E08E58BBA7A2802B1AD6 /* ZeroDeskTests */,
+				9F10EC8373E07A74777A90D6 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		4A896256E80B0C7AB5E0C43A /* Home */ = {
+			isa = PBXGroup;
+			children = (
+				BF4A922AEE95641E610A171D /* HomeView.swift */,
+			);
+			path = Home;
+			sourceTree = "<group>";
+		};
+		7AEE09B12DF1D1E5F37DEC79 /* Readers */ = {
+			isa = PBXGroup;
+			children = (
+				C96BFF92A0EEB5D29852E44F /* DailyCardsView.swift */,
+				6495655B1BA09334D7C321EF /* FileView.swift */,
+				C8BB81E8DB2E6BC7A33A59B6 /* NoteReaderView.swift */,
+				D9E1981416E11E356AD482AC /* QueueProgressView.swift */,
+			);
+			path = Readers;
+			sourceTree = "<group>";
+		};
+		856C58275AC366E82E10AF3B /* Study */ = {
+			isa = PBXGroup;
+			children = (
+				74D4206D41017093237D4137 /* FileBrowserView.swift */,
+				664C8274E24556112089EB40 /* PaneView.swift */,
+				372559A6DADA29FB78C6C7CD /* StudyView.swift */,
+			);
+			path = Study;
+			sourceTree = "<group>";
+		};
+		9F10EC8373E07A74777A90D6 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				304EF460ED3135A52419487A /* ZeroDesk.app */,
+				D563629360D5D08E6FB4045D /* ZeroDeskTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		CD6B4A576926C80AC7068A7A /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				A8538575727021B417050653 /* SettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		D797E08E58BBA7A2802B1AD6 /* ZeroDeskTests */ = {
+			isa = PBXGroup;
+			children = (
+				F9B745D9A7E495409A54451F /* MonoGridTests.swift */,
+				ED590A8BCFEADF62A191B96A /* ReviewFixTests.swift */,
+				E0A77995EC741F690F86099F /* VaultAccessTests.swift */,
+			);
+			path = ZeroDeskTests;
+			sourceTree = "<group>";
+		};
+		DB58125D4BA05B265B89F232 /* ZeroDesk */ = {
+			isa = PBXGroup;
+			children = (
+				20545B01CD23AFFA9651547D /* RootView.swift */,
+				F96A75E03785D12D597E33AD /* SwiftUINames.swift */,
+				C5DC6763D9FEFB501CBEA5B6 /* ZeroDeskApp.swift */,
+				4A896256E80B0C7AB5E0C43A /* Home */,
+				EC4FF6492ED3D3FB50AFE54C /* Markdown */,
+				7AEE09B12DF1D1E5F37DEC79 /* Readers */,
+				F29E07C087037E233600C5E3 /* Resources */,
+				CD6B4A576926C80AC7068A7A /* Settings */,
+				856C58275AC366E82E10AF3B /* Study */,
+				EB04743475590DDAB305087F /* Vault */,
+			);
+			path = ZeroDesk;
+			sourceTree = "<group>";
+		};
+		EB04743475590DDAB305087F /* Vault */ = {
+			isa = PBXGroup;
+			children = (
+				37E31110F1963C692E99A299 /* VaultAccess.swift */,
+				439F27B2B4C2F019A1AFEA1B /* VaultStore.swift */,
+			);
+			path = Vault;
+			sourceTree = "<group>";
+		};
+		EC4FF6492ED3D3FB50AFE54C /* Markdown */ = {
+			isa = PBXGroup;
+			children = (
+				79C48DBCF9A3AA5BE8319237 /* BlocksView.swift */,
+				BAB70B76D4160D0A30E99236 /* InlineText.swift */,
+				8C30BFAE6F12C0B36B9E7C14 /* MonoGrid.swift */,
+			);
+			path = Markdown;
+			sourceTree = "<group>";
+		};
+		F29E07C087037E233600C5E3 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				424CEC74F64B16C342E0F297 /* Info.plist */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		7EB993AC0C2ED2533B8622AC /* ZeroDesk */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 672F57E8934DA6CF2D478FB0 /* Build configuration list for PBXNativeTarget "ZeroDesk" */;
+			buildPhases = (
+				F056BAAC6656D85E31184229 /* Sources */,
+				03D3B49E8E60E38188F6D04B /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ZeroDesk;
+			packageProductDependencies = (
+				8420563B8ED2BD83656B3C2D /* ZeroDeskCore */,
+			);
+			productName = ZeroDesk;
+			productReference = 304EF460ED3135A52419487A /* ZeroDesk.app */;
+			productType = "com.apple.product-type.application";
+		};
+		A4BC3352C27FD68981516B11 /* ZeroDeskTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 41C81C223D3E64BBBAB098A8 /* Build configuration list for PBXNativeTarget "ZeroDeskTests" */;
+			buildPhases = (
+				17F1A19F9B34E6DF75E513D7 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C764CF7EFFD1AC58C08B5C86 /* PBXTargetDependency */,
+			);
+			name = ZeroDeskTests;
+			packageProductDependencies = (
+			);
+			productName = ZeroDeskTests;
+			productReference = D563629360D5D08E6FB4045D /* ZeroDeskTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		5E11EA56C58165907CB30F4D /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					7EB993AC0C2ED2533B8622AC = {
+						DevelopmentTeam = 5G6N83PM9C;
+						ProvisioningStyle = Automatic;
+					};
+					A4BC3352C27FD68981516B11 = {
+						DevelopmentTeam = 5G6N83PM9C;
+					};
+				};
+			};
+			buildConfigurationList = 82EE4E56F80FE798A79DE5C9 /* Build configuration list for PBXProject "ZeroDesk" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 193404E1185B13F76F0EBA03;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				1021BF60B1B385050C2AC424 /* XCLocalSwiftPackageReference "Packages/ZeroDeskCore" */,
+			);
+			preferredProjectObjectVersion = 77;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				7EB993AC0C2ED2533B8622AC /* ZeroDesk */,
+				A4BC3352C27FD68981516B11 /* ZeroDeskTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		17F1A19F9B34E6DF75E513D7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CBECD6A50F6D636A360F9670 /* MonoGridTests.swift in Sources */,
+				7DA2C2723AEDC9A920DAD2F2 /* ReviewFixTests.swift in Sources */,
+				998A895699AA21933BBF4B51 /* VaultAccessTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F056BAAC6656D85E31184229 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				47FCCC41CF542448C14A0ABC /* BlocksView.swift in Sources */,
+				D5B586E08F3DC02CD750023B /* DailyCardsView.swift in Sources */,
+				FD67E5D0F5742CFA4DB7FBD9 /* FileBrowserView.swift in Sources */,
+				E8636E713BF2B4F9A79D569A /* FileView.swift in Sources */,
+				3A511BC00F1E5B816C5429AE /* HomeView.swift in Sources */,
+				42307BF1EA9F06EAB012CCA0 /* InlineText.swift in Sources */,
+				8285AAA2E057C16AAF45CE7F /* MonoGrid.swift in Sources */,
+				634099E1C585B5D496B768F5 /* NoteReaderView.swift in Sources */,
+				B110AAF96741F7BD897F0D0F /* PaneView.swift in Sources */,
+				F37689443AE60AA4DD1A6CDD /* QueueProgressView.swift in Sources */,
+				926DBC9BCA6A291256C5F570 /* RootView.swift in Sources */,
+				B669541149D7520C7D68F447 /* SettingsView.swift in Sources */,
+				B5031FAEF300F3924E03BB90 /* StudyView.swift in Sources */,
+				D36D1ED4FD8AF633651612BC /* SwiftUINames.swift in Sources */,
+				637AEAC4530A25CE4D2389B7 /* VaultAccess.swift in Sources */,
+				38FF01E876DF14BE10C456B4 /* VaultStore.swift in Sources */,
+				984DAB1A7D210626A9CC33F3 /* ZeroDeskApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		C764CF7EFFD1AC58C08B5C86 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7EB993AC0C2ED2533B8622AC /* ZeroDesk */;
+			targetProxy = 677CEF9004C2B5678AF479C8 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		2EED395E752143DF6F2DEB8E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MARKETING_VERSION = 0.1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		3D10F976AF387473BADC0456 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEVELOPMENT_TEAM = 5G6N83PM9C;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.zerohyeon.ZeroDeskTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ZeroDesk.app/ZeroDesk";
+			};
+			name = Release;
+		};
+		540F2A2B96373F99B6A55B19 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 5G6N83PM9C;
+				INFOPLIST_FILE = ZeroDesk/Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.zerohyeon.zerodesk;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		76CBFFED6E37B271203CA287 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MARKETING_VERSION = 0.1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		DE231091287974858993040B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEVELOPMENT_TEAM = 5G6N83PM9C;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.zerohyeon.ZeroDeskTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ZeroDesk.app/ZeroDesk";
+			};
+			name = Debug;
+		};
+		FCCC10C45C826CD128C10E39 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 5G6N83PM9C;
+				INFOPLIST_FILE = ZeroDesk/Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.zerohyeon.zerodesk;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		41C81C223D3E64BBBAB098A8 /* Build configuration list for PBXNativeTarget "ZeroDeskTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DE231091287974858993040B /* Debug */,
+				3D10F976AF387473BADC0456 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		672F57E8934DA6CF2D478FB0 /* Build configuration list for PBXNativeTarget "ZeroDesk" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FCCC10C45C826CD128C10E39 /* Debug */,
+				540F2A2B96373F99B6A55B19 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		82EE4E56F80FE798A79DE5C9 /* Build configuration list for PBXProject "ZeroDesk" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				76CBFFED6E37B271203CA287 /* Debug */,
+				2EED395E752143DF6F2DEB8E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		1021BF60B1B385050C2AC424 /* XCLocalSwiftPackageReference "Packages/ZeroDeskCore" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/ZeroDeskCore;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		8420563B8ED2BD83656B3C2D /* ZeroDeskCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = ZeroDeskCore;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 5E11EA56C58165907CB30F4D /* Project object */;
+}

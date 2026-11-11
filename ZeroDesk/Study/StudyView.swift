@@ -12,15 +12,24 @@ struct StudyView: View {
     @State private var rightStack: [Route] = []
     @State private var compactStack: [Route] = []
     @State private var width: CGFloat = 0
+    /// iPad 왼쪽 칸(대기열)을 보여 줄지. 노트를 읽는 동안에는 접어 둔다.
+    @AppStorage("pane.leftShown") private var queueShown = true
 
     var body: some View {
         Group {
             if sizeClass == .regular {
                 HStack(spacing: 0) {
-                    PaneView(root: $leftPath, stack: $leftStack) { rightStack.append($0) }
+                    if queueShown {
+                        PaneView(root: $leftPath, stack: $leftStack) { r in
+                            rightStack.append(r)
+                            // 대기열에서 노트를 열면 읽기에 집중하도록 대기열을 접는다.
+                            withAnimation { queueShown = false }
+                        }
                         .frame(width: width * 0.4)
-                    Divider()
-                    PaneView(root: $rightPath, stack: $rightStack)
+                        .transition(.move(edge: .leading))
+                        Divider()
+                    }
+                    PaneView(root: $rightPath, stack: $rightStack, queueShown: $queueShown)
                 }
             } else {
                 PaneView(root: .constant(""), stack: $compactStack)

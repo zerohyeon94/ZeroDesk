@@ -5,7 +5,8 @@ import UniformTypeIdentifiers
 struct RootView: View {
     @Environment(VaultStore.self) private var store
     @Environment(\.scenePhase) private var scenePhase
-    @State private var tab = 0
+    /// 시뮬레이터 확인용: -startTab <번호> 로 처음 열 탭을 고른다 (기본 홈).
+    @State private var tab = UserDefaults.standard.integer(forKey: "startTab")
     @State private var request: Route?
     @State private var started = false
 

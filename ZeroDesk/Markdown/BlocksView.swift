@@ -29,8 +29,8 @@ private struct BlockView: View {
             if p.childCount == 1, let img = p.child(at: 0) as? Markdown.Image {
                 VaultImage(source: img.source ?? "", alt: img.plainText)
             } else if !nested, p.child(at: 0) is Strong {
-                text(p).padding(10).frame(maxWidth: .infinity, alignment: .leading)
-                    .background(.tint.opacity(0.07), in: .rect(cornerRadius: 8))
+                // 굵은 글씨로 시작하는 문단(핵심·주의)은 배경 상자 대신 왼쪽 세로줄로 표시한다.
+                text(p).sideRule(.tint)
             } else {
                 text(p)
             }
@@ -46,8 +46,7 @@ private struct BlockView: View {
             VStack(alignment: .leading, spacing: 10) {
                 ForEach(Array(q.children.enumerated()), id: \.offset) { BlockView(markup: $0.element) }
             }
-            .padding(10).frame(maxWidth: .infinity, alignment: .leading)
-            .background(.secondary.opacity(0.08), in: .rect(cornerRadius: 8))
+            .sideRule(.secondary)
         case let c as CodeBlock:
             ScrollView(.horizontal) {
                 Text(MonoGrid.text(c.code.hasSuffix("\n") ? String(c.code.dropLast()) : c.code))
@@ -68,6 +67,15 @@ private struct BlockView: View {
 
     private func text(_ m: Markup) -> some View {
         Text(inlineText(m, index: store.index)).lineSpacing(6).fixedSize(horizontal: false, vertical: true)
+    }
+}
+
+private extension View {
+    /// 인용·강조 문단: 상자 없이 왼쪽 세로줄(3pt)과 들여쓰기만 준다.
+    func sideRule(_ style: some ShapeStyle) -> some View {
+        padding(.leading, 14).padding(.vertical, 2)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .overlay(alignment: .leading) { Capsule().fill(style.opacity(0.6)).frame(width: 3) }
     }
 }
 

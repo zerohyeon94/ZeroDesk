@@ -3,13 +3,17 @@ import UIKit
 
 /// 코드 블록 글꼴. 한글이 고정폭 글꼴에 없어 대체 글꼴로 그려지면 폭이 칸에 맞지 않아 텍스트 그림이 어긋난다.
 /// 그래서 글자마다 자간(kern)을 더해 넓은 글자(한글·한자·전각)는 정확히 2칸, 나머지는 1칸이 되게 한다.
+/// 칸 폭을 영문 글자 폭 그대로 두면 한글 사이가 크게 벌어져(`카 메 라`) 읽기 어렵다.
+/// 그래서 칸을 영문 폭의 78%로 좁혀 영문은 조금 붙이고 한글 사이 틈을 줄인다 (한글 폭의 절반보다 좁히지는 않는다).
 enum MonoGrid {
+    static let cellRatio: CGFloat = 0.78
+
     static var font: UIFont { UIFont.monospacedSystemFont(ofSize: UIFont.preferredFont(forTextStyle: .callout).pointSize, weight: .regular) }
 
     @MainActor private static var widths: [String: CGFloat] = [:]
 
     @MainActor static func text(_ code: String, font: UIFont = font) -> AttributedString {
-        let cell = width("M", font)
+        let cell = cell(font)
         var out = AttributedString()
         for ch in code {
             var a = AttributedString(String(ch))
@@ -22,6 +26,11 @@ enum MonoGrid {
         }
         out.font = Font(font)
         return out
+    }
+
+    /// 한 칸의 폭. 영문 폭의 `cellRatio`배, 한글 폭의 절반보다 좁지 않게.
+    @MainActor static func cell(_ font: UIFont = font) -> CGFloat {
+        max(width("M", font) * cellRatio, width("가", font) / 2)
     }
 
     @MainActor static func width(_ s: String, _ font: UIFont) -> CGFloat {

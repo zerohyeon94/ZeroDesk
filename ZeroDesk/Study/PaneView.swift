@@ -14,6 +14,8 @@ struct PaneView: View {
     @Binding var stack: [Route]
     /// 링크를 다른 칸에서 열 때. `nil`이면 이 칸에 쌓는다.
     var openElsewhere: ((Route) -> Void)?
+    /// iPad 오른쪽 칸: 왼쪽 칸(대기열)을 접고 펴는 버튼을 단다. `nil`이면 버튼 없음.
+    var queueShown: Binding<Bool>?
     @Environment(VaultStore.self) private var store
     @State private var switching = false
     @State private var missing = false
@@ -48,6 +50,14 @@ struct PaneView: View {
                 .navigationTitle(((r.path as NSString).lastPathComponent as NSString).deletingPathExtension)
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
+                    if let queueShown {
+                        ToolbarItem(placement: .topBarLeading) {
+                            Button { withAnimation { queueShown.wrappedValue.toggle() } } label: {
+                                Image(systemName: "sidebar.left")
+                            }
+                            .accessibilityLabel(queueShown.wrappedValue ? "대기열 접기" : "대기열 펴기")
+                        }
+                    }
                     ToolbarItem(placement: .topBarLeading) {
                         Button { switching = true } label: { Image(systemName: "arrow.left.arrow.right") }
                             .accessibilityLabel("파일 바꾸기")

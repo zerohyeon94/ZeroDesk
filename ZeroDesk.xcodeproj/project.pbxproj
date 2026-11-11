@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		261593F3E71B190E85D38297 /* NoteInk.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83A7AAE2F0F4C97ECDAEC42E /* NoteInk.swift */; };
 		38FF01E876DF14BE10C456B4 /* VaultStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 439F27B2B4C2F019A1AFEA1B /* VaultStore.swift */; };
 		3983B4FF083E5A257D9B1D76 /* ZeroDeskCore in Frameworks */ = {isa = PBXBuildFile; productRef = 8420563B8ED2BD83656B3C2D /* ZeroDeskCore */; };
 		3A511BC00F1E5B816C5429AE /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF4A922AEE95641E610A171D /* HomeView.swift */; };
@@ -27,6 +28,7 @@
 		D5B586E08F3DC02CD750023B /* DailyCardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96BFF92A0EEB5D29852E44F /* DailyCardsView.swift */; };
 		E8636E713BF2B4F9A79D569A /* FileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6495655B1BA09334D7C321EF /* FileView.swift */; };
 		F37689443AE60AA4DD1A6CDD /* QueueProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E1981416E11E356AD482AC /* QueueProgressView.swift */; };
+		F415C3C4DBE68DE991BAC9D1 /* InkCanvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37AF7B76B157F1BA02B9BA23 /* InkCanvas.swift */; };
 		FD67E5D0F5742CFA4DB7FBD9 /* FileBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74D4206D41017093237D4137 /* FileBrowserView.swift */; };
 /* End PBXBuildFile section */
 
@@ -44,6 +46,7 @@
 		20545B01CD23AFFA9651547D /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		304EF460ED3135A52419487A /* ZeroDesk.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = ZeroDesk.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		372559A6DADA29FB78C6C7CD /* StudyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudyView.swift; sourceTree = "<group>"; };
+		37AF7B76B157F1BA02B9BA23 /* InkCanvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InkCanvas.swift; sourceTree = "<group>"; };
 		37E31110F1963C692E99A299 /* VaultAccess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VaultAccess.swift; sourceTree = "<group>"; };
 		424CEC74F64B16C342E0F297 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		439F27B2B4C2F019A1AFEA1B /* VaultStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VaultStore.swift; sourceTree = "<group>"; };
@@ -51,6 +54,7 @@
 		664C8274E24556112089EB40 /* PaneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaneView.swift; sourceTree = "<group>"; };
 		74D4206D41017093237D4137 /* FileBrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileBrowserView.swift; sourceTree = "<group>"; };
 		79C48DBCF9A3AA5BE8319237 /* BlocksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlocksView.swift; sourceTree = "<group>"; };
+		83A7AAE2F0F4C97ECDAEC42E /* NoteInk.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteInk.swift; sourceTree = "<group>"; };
 		8C30BFAE6F12C0B36B9E7C14 /* MonoGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonoGrid.swift; sourceTree = "<group>"; };
 		9A1EED4748F25CB35517C9B3 /* ZeroDeskCore */ = {isa = PBXFileReference; lastKnownFileType = folder; name = ZeroDeskCore; path = Packages/ZeroDeskCore; sourceTree = SOURCE_ROOT; };
 		A8538575727021B417050653 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -135,6 +139,15 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		B7A9F684803A87BDE2F544FD /* Ink */ = {
+			isa = PBXGroup;
+			children = (
+				37AF7B76B157F1BA02B9BA23 /* InkCanvas.swift */,
+				83A7AAE2F0F4C97ECDAEC42E /* NoteInk.swift */,
+			);
+			path = Ink;
+			sourceTree = "<group>";
+		};
 		CD6B4A576926C80AC7068A7A /* Settings */ = {
 			isa = PBXGroup;
 			children = (
@@ -160,6 +173,7 @@
 				F96A75E03785D12D597E33AD /* SwiftUINames.swift */,
 				C5DC6763D9FEFB501CBEA5B6 /* ZeroDeskApp.swift */,
 				4A896256E80B0C7AB5E0C43A /* Home */,
+				B7A9F684803A87BDE2F544FD /* Ink */,
 				EC4FF6492ED3D3FB50AFE54C /* Markdown */,
 				7AEE09B12DF1D1E5F37DEC79 /* Readers */,
 				F29E07C087037E233600C5E3 /* Resources */,
@@ -298,8 +312,10 @@
 				FD67E5D0F5742CFA4DB7FBD9 /* FileBrowserView.swift in Sources */,
 				E8636E713BF2B4F9A79D569A /* FileView.swift in Sources */,
 				3A511BC00F1E5B816C5429AE /* HomeView.swift in Sources */,
+				F415C3C4DBE68DE991BAC9D1 /* InkCanvas.swift in Sources */,
 				42307BF1EA9F06EAB012CCA0 /* InlineText.swift in Sources */,
 				8285AAA2E057C16AAF45CE7F /* MonoGrid.swift in Sources */,
+				261593F3E71B190E85D38297 /* NoteInk.swift in Sources */,
 				634099E1C585B5D496B768F5 /* NoteReaderView.swift in Sources */,
 				B110AAF96741F7BD897F0D0F /* PaneView.swift in Sources */,
 				F37689443AE60AA4DD1A6CDD /* QueueProgressView.swift in Sources */,

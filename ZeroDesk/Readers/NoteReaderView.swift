@@ -1,7 +1,9 @@
+import PencilKit
 import SwiftUI
 import ZeroDeskCore
 
 /// 길게 읽기: 절 표시줄(고정) + 절 번호·구분선 + 다음 절 버튼 + 이어 읽기 (스펙 5.3).
+/// 본문 폭이 680pt로 고정되는 넓은 화면에서는 절마다 Pencil 필기 층을 얹는다 (md 파일은 그대로).
 struct NoteReaderView: View {
     let doc: NoteDocument
     let path: String
@@ -13,6 +15,17 @@ struct NoteReaderView: View {
     @State private var tops = Tops()
     final class Tops { var values: [Int: CGFloat] = [:] }
     @State private var restored = false
+    @Environment(\.scenePhase) private var scenePhase
+    @State private var ink: NoteInk?
+    @State private var inking = false
+    @State private var toolPicker = PKToolPicker()
+    @State private var readerWidth: CGFloat = 0
+
+    /// 본문 폭(680pt)이 고정되는 넓이에서만 필기를 쓴다. 폭이 바뀌면 줄 바뀜이 달라져 필기가 어긋나기 때문.
+    static let inkMinWidth: CGFloat = 728
+    private var inkAvailable: Bool { readerWidth >= Self.inkMinWidth }
+    /// 그린 때의 글자 배치. 글자 크기가 바뀌면 필기가 어긋났다고 본다.
+    private var inkLayout: String { "680|\(typeSize.oneLarger)" }
 
     /// 화면 위에서 100pt 안으로 올라온 마지막 절이 지금 절이다.
     static func currentSection(_ tops: [Int: CGFloat]) -> Int {
@@ -28,8 +41,16 @@ struct NoteReaderView: View {
                     if let title = doc.title {
                         Text(title).font(.largeTitle.bold()).padding(.bottom, 16)
                     }
+                    if !inkAvailable, let ink, !ink.file.sections.isEmpty {
+                        Label("필기는 넓은 화면에서 보임 (대기열을 접거나 iPad에서)", systemImage: "pencil.tip")
+                            .font(.footnote).foregroundStyle(.secondary).padding(.bottom, 12)
+                    }
+                    if let ink, ink.saveFailed {
+                        Label("필기를 저장하지 못함. 잠시 뒤 다시 저장함", systemImage: "exclamationmark.icloud")
+                            .font(.footnote).foregroundStyle(.red).padding(.bottom, 12)
+                    }
                     ForEach(doc.sections) { section in
-                        sectionView(section, proxy: proxy)
+                        inkedSection(section, proxy: proxy)
                             .id(section.id)
                             .onGeometryChange(for: CGFloat.self) { $0.frame(in: .scrollView).minY } action: {
                                 tops.values[section.id] = $0
@@ -47,6 +68,26 @@ struct NoteReaderView: View {
             .safeAreaInset(edge: .top, spacing: 0) {
                 if titled.count > 1 { sectionBar(proxy) }
             }
+            .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { readerWidth = $0 }
+            .onChange(of: inkAvailable) { _, ok in if !ok { inking = false } }
+            .onChange(of: scenePhase) { _, p in if p != .active { Task { await ink?.flush() } } }
+            .onDisappear { Task { [ink] in await ink?.flush() } }
+            .task(id: path) {
+                let i = NoteInk(notePath: path, store: store)
+                ink = i
+                await i.load()
+            }
+            .toolbar {
+                if inkAvailable, let ink {
+                    ToolbarItem(placement: .primaryAction) {
+                        Button { inking.toggle() } label: {
+                            Image(systemName: inking ? "pencil.tip.crop.circle.fill" : "pencil.tip.crop.circle")
+                        }
+                        .disabled(ink.state != .ready)
+                        .accessibilityLabel(ink.state == .failed ? "필기를 읽지 못함" : inking ? "필기 끝내기" : "필기하기")
+                    }
+                }
+            }
             .onChange(of: current) { _, c in if restored { store.setLastSection(c, of: path) } }
             .task(id: path) {
                 let target = heading.flatMap(doc.sectionIndex(forHeading:)) ?? store.lastSection(of: path)
@@ -54,6 +95,37 @@ struct NoteReaderView: View {
                 if target > 0, target < doc.sections.count { proxy.scrollTo(target, anchor: .top) }
                 restored = true
             }
+        }
+    }
+
+    /// 절 + 그 위의 필기 층. 본문이 바뀐 절은 필기를 흐리게 보여 주고 아래에 고르는 줄을 단다.
+    /// 고르는 줄은 절 아래에 두어 이 절 필기의 위치를 밀지 않는다.
+    @ViewBuilder private func inkedSection(_ s: NoteSection, proxy: ScrollViewProxy) -> some View {
+        let key = doc.inkKeys[s.id] ?? s.title
+        let hash = s.inkHash
+        if inkAvailable, let ink, ink.state == .ready {
+            let data = ink.data(key)
+            let stale = data != nil && !ink.file.matches(key, hash: hash, layout: inkLayout)
+            VStack(alignment: .leading, spacing: 10) {
+                sectionView(s, proxy: proxy)
+                    .overlay {
+                        InkCanvas(data: data, editing: inking, stale: stale, focused: s.id == current,
+                                  toolPicker: toolPicker) { d, bytes in
+                            ink.set(d, data: bytes, key: key, hash: hash, layout: inkLayout)
+                        }
+                    }
+                if stale {
+                    HStack(spacing: 12) {
+                        Label("본문이 바뀌어 필기 위치가 어긋났을 수 있음", systemImage: "exclamationmark.triangle")
+                            .font(.footnote).foregroundStyle(.secondary)
+                        Button("그대로 쓰기") { ink.accept(key: key, hash: hash, layout: inkLayout) }
+                        Button("지우기", role: .destructive) { ink.clear(key: key) }
+                    }
+                    .font(.footnote).buttonStyle(.borderless)
+                }
+            }
+        } else {
+            sectionView(s, proxy: proxy)
         }
     }
 

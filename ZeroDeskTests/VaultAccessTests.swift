@@ -1,6 +1,7 @@
 import Foundation
 import Testing
 @testable import ZeroDesk
+import ZeroDeskCore
 
 @MainActor
 struct VaultAccessTests {
@@ -85,5 +86,24 @@ struct VaultAccessTests {
         #expect(missing.monthSectionMissing && missing.month == nil)
         let broken = await HomeSnapshot.make(paths: ["Schedule/학습 대기열.md"], month: "2026-11") { _ in throw VaultError.unreadable }
         #expect(broken.queueUnreadable)
+    }
+
+    @Test func homeSnapshotDaily() async {
+        let today = "Daily/2026-11/2026-11-12.md"
+        let text = "## 오늘 학습\n- **개념:** x · 0/1\n- **문제:** 맞힘 1 · 2/2\n- **복습:** 없음\n## 이번 주\n- **학습한 날:** 3/4"
+        // 파일 없음 → 아직 없음
+        let missing = await HomeSnapshot.make(paths: [], month: "2026-11", dailyPath: today) { _ in text }
+        #expect(missing.daily(for: today) == nil)
+        // 읽음
+        let ok = await HomeSnapshot.make(paths: [today], month: "2026-11", dailyPath: today) { _ in text }
+        #expect(ok.daily(for: today)?.today == 0.5)
+        #expect(ok.daily(for: today)?.studyDays == 3)
+        // 어제 값은 오늘처럼 보이지 않는다
+        #expect(ok.daily(for: "Daily/2026-11/2026-11-13.md") == nil)
+        // 읽기 실패: 지난 값 유지, 없으면 읽을 수 없음(0%가 아님)
+        let kept = await HomeSnapshot.make(paths: [today], month: "2026-11", dailyPath: today, previous: ok) { _ in throw VaultError.unreadable }
+        #expect(kept.daily(for: today) == ok.daily)
+        let broken = await HomeSnapshot.make(paths: [today], month: "2026-11", dailyPath: today) { _ in throw VaultError.unreadable }
+        #expect(broken.daily(for: today) == DailyProgress())
     }
 }

@@ -10,6 +10,9 @@ struct HomeSnapshot: Codable, Equatable {
     var yearGoal: String?
     var schedule: ScheduleFile?
     var scheduleMissing: Bool
+    /// 오늘 Daily 경로와 거기서 읽은 진행. `daily == nil`은 파일이 아직 없음.
+    var dailyPath: String? = nil
+    var daily: DailyProgress? = nil
 
     static let queuePath = "Schedule/학습 대기열.md"
     static let schedulePath = "Schedule/주요 일정.md"
@@ -18,8 +21,11 @@ struct HomeSnapshot: Codable, Equatable {
     /// 이번 달 것일 때만 대기열 숫자를 준다 (월초 지난 값이 이번 달처럼 보이지 않게).
     func month(for key: String) -> QueueMonth? { month?.month == key ? month : nil }
 
+    /// 오늘 Daily 것일 때만 준다 (자정 뒤 어제 것이 오늘처럼 보이지 않게).
+    func daily(for path: String) -> DailyProgress? { dailyPath == path ? daily : nil }
+
     /// 읽기 실패(iCloud·오프라인)는 형식 오류와 다르다. `previous`가 있으면 그 칸의 지난 값을 유지한다.
-    static func make(paths: [String], month: String, previous: HomeSnapshot? = nil,
+    static func make(paths: [String], month: String, dailyPath: String? = nil, previous: HomeSnapshot? = nil,
                      read: @Sendable (String) async throws -> String) async -> HomeSnapshot {
         var s = HomeSnapshot(month: nil, monthSectionMissing: false, queueUnreadable: false,
                              yearGoal: nil, schedule: nil, scheduleMissing: !paths.contains(schedulePath))
@@ -44,6 +50,11 @@ struct HomeSnapshot: Codable, Equatable {
             if let text = try? await read(schedulePath) { s.schedule = ScheduleFile.parse(text) }
             else if let previous { (s.schedule, s.scheduleMissing) = (previous.schedule, previous.scheduleMissing) }
             else { s.scheduleMissing = true }
+        }
+        if let dailyPath, paths.contains(dailyPath) {
+            s.dailyPath = dailyPath
+            if let text = try? await read(dailyPath) { s.daily = DailyProgress.parse(text) }
+            else { s.daily = previous?.daily(for: dailyPath) ?? DailyProgress() }  // 지난 값이 없으면 읽을 수 없음
         }
         return s
     }
@@ -123,7 +134,8 @@ final class VaultStore {
             apply(files: list)
             let t = todayKST()
             let month = String(format: "%04d-%02d", t.year ?? 0, t.month ?? 0)
-            home = await HomeSnapshot.make(paths: list.map(\.path), month: month, previous: home) { path in
+            let daily = DailyProgress.path(year: t.year ?? 0, month: t.month ?? 0, day: t.day ?? 0)
+            home = await HomeSnapshot.make(paths: list.map(\.path), month: month, dailyPath: daily, previous: home) { path in
                 try await access.readText(path, root: root)
             }
             phase = .ready

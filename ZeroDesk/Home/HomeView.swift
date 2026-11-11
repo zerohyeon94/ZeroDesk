@@ -14,12 +14,12 @@ struct HomeView: View {
                 if sizeClass == .regular && width > 700 {
                     let left = (width - 40 - 20) / 2.15
                     HStack(alignment: .top, spacing: 20) {
-                        VStack(spacing: 16) { gauge(home); yearGoal(home); today(home) }.frame(width: left)
+                        VStack(spacing: 16) { gauge(home); progress(home); yearGoal(home); today(home) }.frame(width: left)
                         schedule(home)
                     }
                     .padding(20)
                 } else {
-                    VStack(spacing: 16) { gauge(home); schedule(home); today(home); yearGoal(home) }.padding(16)
+                    VStack(spacing: 16) { gauge(home); progress(home); schedule(home); today(home); yearGoal(home) }.padding(16)
                 }
             } else {
                 ProgressView("iCloud에서 받는 중").padding(.top, 80)
@@ -53,6 +53,29 @@ struct HomeView: View {
                     .font(.callout).foregroundStyle(.secondary)
             } else {
                 Text("이번 달 대기열이 아직 없음").foregroundStyle(.secondary)
+            }
+        }
+    }
+
+    /// 오늘 Daily 한 파일에서 읽은 두 막대. 못 읽은 막대는 0%가 아니라 "읽을 수 없음".
+    @ViewBuilder private func progress(_ h: HomeSnapshot) -> some View {
+        let t = todayKST()
+        Card {
+            if let d = h.daily(for: DailyProgress.path(year: t.year ?? 0, month: t.month ?? 0, day: t.day ?? 0)) {
+                ProgressRow(title: "오늘 진행", value: d.today,
+                            label: d.today.map { "\(Int(($0 * 100).rounded()))%" }) {
+                    if let done = d.choiceDone {
+                        Label(done ? "선택 했음" : "선택 안 함", systemImage: done ? "circle.fill" : "circle")
+                            .font(.caption).foregroundStyle(done ? AnyShapeStyle(.tint) : AnyShapeStyle(.secondary))
+                    }
+                }
+                // 목표가 없으면(`n일`) 막대 없이 숫자만.
+                ProgressRow(title: "이번 주 진행",
+                            value: d.studyDays.flatMap { n in d.studyGoal.map { Double(n) / Double(max($0, 1)) } },
+                            label: d.studyDays.map { n in d.studyGoal.map { "\(n)/\($0)일" } ?? "\(n)일" }) { EmptyView() }
+            } else {
+                Text("오늘 진행").font(.subheadline.bold()).foregroundStyle(.secondary)
+                Text("오늘 Daily 아직 없음").foregroundStyle(.secondary)
             }
         }
     }
@@ -139,6 +162,27 @@ private struct ScheduleRow: View {
         switch entry.date {
         case let .day(_, m, d): "\(m)/\(d)"
         case let .month(_, m): "\(m)월"
+        }
+    }
+}
+
+/// 제목·숫자 한 줄과 막대. `label == nil`이면 "읽을 수 없음", `value == nil`이면 막대를 그리지 않는다.
+private struct ProgressRow<Extra: View>: View {
+    let title: String
+    let value: Double?
+    let label: String?
+    @ViewBuilder var extra: Extra
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(alignment: .firstTextBaseline) {
+                Text(title).font(.subheadline.bold()).foregroundStyle(.secondary)
+                Spacer()
+                extra
+                Text(label ?? "읽을 수 없음").font(label == nil ? .callout : .headline.monospacedDigit())
+                    .foregroundStyle(label == nil ? .secondary : .primary)
+            }
+            if let value { ProgressView(value: min(value, 1)) }
         }
     }
 }

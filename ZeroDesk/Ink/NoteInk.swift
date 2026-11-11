@@ -47,6 +47,20 @@ final class NoteInk {
         scheduleSave()
     }
 
+    func highlights(in section: String) -> [Highlight] { file.highlights.filter { $0.section == section } }
+
+    func add(_ h: Highlight) {
+        guard state == .ready else { return }
+        file.highlights.append(h)
+        scheduleSave()
+    }
+
+    func remove(highlight id: UUID) {
+        guard state == .ready else { return }
+        file.highlights.removeAll { $0.id == id }
+        scheduleSave()
+    }
+
     /// 본문이 바뀐 절의 필기를 지금 본문에 맞는 것으로 받아들인다.
     func accept(key: String, hash: String, layout: String) {
         guard state == .ready, var s = file.sections[key] else { return }

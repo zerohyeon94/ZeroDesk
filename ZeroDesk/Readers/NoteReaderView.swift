@@ -17,7 +17,11 @@ struct NoteReaderView: View {
     @State private var restored = false
     @Environment(\.scenePhase) private var scenePhase
     @State private var ink: NoteInk?
-    @State private var inking = false
+    /// 읽기 / 형광펜 / 자유 필기 중 하나.
+    enum Tool { case read, highlight, ink }
+    @State private var tool: Tool = .read
+    private var inking: Bool { tool == .ink }
+    @AppStorage("highlight.color") private var highlightColor: HighlightColor = .yellow
     @State private var toolPicker = PKToolPicker()
     @State private var readerWidth: CGFloat = 0
 
@@ -25,7 +29,8 @@ struct NoteReaderView: View {
     static let inkMinWidth: CGFloat = 728
     private var inkAvailable: Bool { readerWidth >= Self.inkMinWidth }
     /// 그린 때의 글자 배치. 글자 크기가 바뀌면 필기가 어긋났다고 본다.
-    private var inkLayout: String { "680|\(typeSize.oneLarger)" }
+    /// `tk`: 문단을 TextKit으로 그리기 시작한 뒤의 배치 (그 전 필기는 위치가 다를 수 있음).
+    private var inkLayout: String { "680|\(typeSize.oneLarger)|tk" }
 
     /// 화면 위에서 100pt 안으로 올라온 마지막 절이 지금 절이다.
     static func currentSection(_ tops: [Int: CGFloat]) -> Int {
@@ -69,7 +74,7 @@ struct NoteReaderView: View {
                 if titled.count > 1 { sectionBar(proxy) }
             }
             .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { readerWidth = $0 }
-            .onChange(of: inkAvailable) { _, ok in if !ok { inking = false } }
+            .onChange(of: inkAvailable) { _, ok in if !ok, tool == .ink { tool = .read } }
             .onChange(of: scenePhase) { _, p in if p != .active { Task { await ink?.flush() } } }
             .onDisappear { Task { [ink] in await ink?.flush() } }
             .task(id: path) {
@@ -78,9 +83,31 @@ struct NoteReaderView: View {
                 await i.load()
             }
             .toolbar {
+                if let ink {
+                    ToolbarItemGroup(placement: .primaryAction) {
+                        if tool == .highlight {
+                            Menu {
+                                Picker("색", selection: $highlightColor) {
+                                    ForEach(HighlightColor.allCases, id: \.self) { c in
+                                        Label(c.label, systemImage: "circle.fill").tint(c.swatch).tag(c)
+                                    }
+                                }
+                            } label: {
+                                Image(systemName: "circle.fill").foregroundStyle(highlightColor.swatch)
+                            }
+                            .accessibilityLabel("형광펜 색: \(highlightColor.label)")
+                        }
+                        Button { tool = tool == .highlight ? .read : .highlight } label: {
+                            Image(systemName: "highlighter").symbolVariant(tool == .highlight ? .fill : .none)
+                                .foregroundStyle(tool == .highlight ? AnyShapeStyle(highlightColor.swatch) : AnyShapeStyle(.tint))
+                        }
+                        .disabled(ink.state != .ready)
+                        .accessibilityLabel(tool == .highlight ? "형광펜 끝내기" : "형광펜")
+                    }
+                }
                 if inkAvailable, let ink {
                     ToolbarItem(placement: .primaryAction) {
-                        Button { inking.toggle() } label: {
+                        Button { tool = tool == .ink ? .read : .ink } label: {
                             Image(systemName: inking ? "pencil.tip.crop.circle.fill" : "pencil.tip.crop.circle")
                         }
                         .disabled(ink.state != .ready)
@@ -103,11 +130,12 @@ struct NoteReaderView: View {
     @ViewBuilder private func inkedSection(_ s: NoteSection, proxy: ScrollViewProxy) -> some View {
         let key = doc.inkKeys[s.id] ?? s.title
         let hash = s.inkHash
+        let section = sectionView(s, proxy: proxy).environment(\.highlightContext, highlightContext(key, s))
         if inkAvailable, let ink, ink.state == .ready {
             let data = ink.data(key)
             let stale = data != nil && !ink.file.matches(key, hash: hash, layout: inkLayout)
             VStack(alignment: .leading, spacing: 10) {
-                sectionView(s, proxy: proxy)
+                section
                     .overlay {
                         InkCanvas(data: data, editing: inking, stale: stale, focused: s.id == current,
                                   toolPicker: toolPicker) { d, bytes in
@@ -125,7 +153,25 @@ struct NoteReaderView: View {
                 }
             }
         } else {
-            sectionView(s, proxy: proxy)
+            section
+        }
+    }
+
+    /// 형광펜은 글자에 붙으므로 화면 폭과 상관없이(iPhone 포함) 보인다.
+    private func highlightContext(_ key: String, _ s: NoteSection) -> HighlightContext? {
+        guard let ink, ink.state == .ready else { return nil }
+        let highlights = ink.highlights(in: key)
+        let texts = Self.paragraphTexts(s.blocks)
+        let placed = Highlight.resolve(highlights, paragraphs: texts).mapValues { (text: texts[$0.paragraph], range: $0.range) }
+        return HighlightContext(section: key, highlights: highlights, placed: placed, marking: tool == .highlight,
+                                color: highlightColor, add: { ink.add($0) }, remove: { ink.remove(highlight: $0) })
+    }
+
+    /// 절 안의 문단 글(목록·인용 안 포함)을 화면에 그리는 글과 같은 모양으로 순서대로 모은다.
+    static func paragraphTexts(_ blocks: [Markup]) -> [String] {
+        blocks.flatMap { b -> [String] in
+            if let p = b as? Paragraph { return [String(inlineText(p).characters)] }
+            return paragraphTexts(Array(b.children))
         }
     }
 

@@ -27,6 +27,7 @@
 		D36D1ED4FD8AF633651612BC /* SwiftUINames.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96A75E03785D12D597E33AD /* SwiftUINames.swift */; };
 		D5B586E08F3DC02CD750023B /* DailyCardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96BFF92A0EEB5D29852E44F /* DailyCardsView.swift */; };
 		E8636E713BF2B4F9A79D569A /* FileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6495655B1BA09334D7C321EF /* FileView.swift */; };
+		EDF48264211997416E130F34 /* HighlightText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F96F317CAAFF66FE132CB73 /* HighlightText.swift */; };
 		F37689443AE60AA4DD1A6CDD /* QueueProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E1981416E11E356AD482AC /* QueueProgressView.swift */; };
 		F415C3C4DBE68DE991BAC9D1 /* InkCanvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37AF7B76B157F1BA02B9BA23 /* InkCanvas.swift */; };
 		FD67E5D0F5742CFA4DB7FBD9 /* FileBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74D4206D41017093237D4137 /* FileBrowserView.swift */; };
@@ -48,6 +49,7 @@
 		372559A6DADA29FB78C6C7CD /* StudyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudyView.swift; sourceTree = "<group>"; };
 		37AF7B76B157F1BA02B9BA23 /* InkCanvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InkCanvas.swift; sourceTree = "<group>"; };
 		37E31110F1963C692E99A299 /* VaultAccess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VaultAccess.swift; sourceTree = "<group>"; };
+		3F96F317CAAFF66FE132CB73 /* HighlightText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HighlightText.swift; sourceTree = "<group>"; };
 		424CEC74F64B16C342E0F297 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		439F27B2B4C2F019A1AFEA1B /* VaultStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VaultStore.swift; sourceTree = "<group>"; };
 		6495655B1BA09334D7C321EF /* FileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileView.swift; sourceTree = "<group>"; };
@@ -142,6 +144,7 @@
 		B7A9F684803A87BDE2F544FD /* Ink */ = {
 			isa = PBXGroup;
 			children = (
+				3F96F317CAAFF66FE132CB73 /* HighlightText.swift */,
 				37AF7B76B157F1BA02B9BA23 /* InkCanvas.swift */,
 				83A7AAE2F0F4C97ECDAEC42E /* NoteInk.swift */,
 			);
@@ -311,6 +314,7 @@
 				D5B586E08F3DC02CD750023B /* DailyCardsView.swift in Sources */,
 				FD67E5D0F5742CFA4DB7FBD9 /* FileBrowserView.swift in Sources */,
 				E8636E713BF2B4F9A79D569A /* FileView.swift in Sources */,
+				EDF48264211997416E130F34 /* HighlightText.swift in Sources */,
 				3A511BC00F1E5B816C5429AE /* HomeView.swift in Sources */,
 				F415C3C4DBE68DE991BAC9D1 /* InkCanvas.swift in Sources */,
 				42307BF1EA9F06EAB012CCA0 /* InlineText.swift in Sources */,

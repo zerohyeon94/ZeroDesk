@@ -14,7 +14,10 @@ struct HighlightContext {
     var marking: Bool
     var color: HighlightColor
     var add: (Highlight) -> Void
+    /// 형광펜 지우기 (메모가 달려 있으면 읽기 화면이 먼저 묻는다).
     var remove: (UUID) -> Void
+    /// 형광펜 메모 창 열기.
+    var openMemo: (UUID) -> Void
 }
 
 extension EnvironmentValues {
@@ -61,6 +64,7 @@ struct HighlightText: UIViewRepresentable {
         v.textContainer.lineFragmentPadding = 0
         v.linkTextAttributes = [:]  // 링크 색은 글에 직접 칠한다 (없는 링크는 회색)
         v.delegate = ctx.coordinator
+        v.clipsToBounds = false  // 메모 표시가 문단 위쪽 여백으로 살짝 나가도 잘리지 않게
         v.setContentHuggingPriority(.defaultLow, for: .horizontal)
         v.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         #if targetEnvironment(simulator)
@@ -74,10 +78,15 @@ struct HighlightText: UIViewRepresentable {
         pan.maximumNumberOfTouches = 1
         let tap = UITapGestureRecognizer(target: ctx.coordinator, action: #selector(Coordinator.tap(_:)))
         tap.allowedTouchTypes = touchTypes
+        // 읽기 모드: 칠한 곳이나 메모 표시를 누르면 메모 창을 연다 (손가락·Pencil 모두). 다른 곳은 링크·글 고르기가 받는다.
+        let open = UITapGestureRecognizer(target: ctx.coordinator, action: #selector(Coordinator.openTap(_:)))
+        open.delegate = ctx.coordinator
         v.addGestureRecognizer(pan)
         v.addGestureRecognizer(tap)
+        v.addGestureRecognizer(open)
         ctx.coordinator.pan = pan
         ctx.coordinator.tap = tap
+        ctx.coordinator.open = open
         return v
     }
 
@@ -95,8 +104,10 @@ struct HighlightText: UIViewRepresentable {
         }
         c.pan?.isEnabled = context.marking
         c.tap?.isEnabled = context.marking
+        c.open?.isEnabled = !context.marking
         c.render(v)
         v.bands = c.located.map { ($0.range, $0.highlight.color.uiColor) }
+        v.memos = c.located.filter { $0.highlight.memo != nil }.map(\.range)
         v.bandFont = c.font
         // 형광펜 모드에서는 Pencil로 화면이 스크롤되지 않게 한다 (칠하는 동안 글이 밀려 엉뚱한 곳이 칠해짐).
         let marking = context.marking
@@ -117,6 +128,7 @@ struct HighlightText: UIViewRepresentable {
         var located: [(range: NSRange, highlight: Highlight)] = []
         weak var pan: UIPanGestureRecognizer?
         weak var tap: UITapGestureRecognizer?
+        weak var open: UITapGestureRecognizer?
         /// Pencil로 긋는 중인 범위 (손을 떼면 저장).
         private var live: NSRange?
         private var start = 0
@@ -125,7 +137,25 @@ struct HighlightText: UIViewRepresentable {
 
         func gestureRecognizer(_ g: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
             if g === pan { touchDown = touch.location(in: g.view) }
+            if g === open, let v = g.view as? InkTextView { return hit(v, touch.location(in: v)) != nil }
             return true
+        }
+
+        /// 메모 열기 누르기는 글 보기 자체의 누르기(링크·고르기)와 함께 인식되게 한다 (아니면 글 보기 쪽이 가져감).
+        func gestureRecognizer(_ g: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith other: UIGestureRecognizer) -> Bool {
+            g === open
+        }
+
+        /// 점에 닿은 형광펜: 메모 표시 먼저, 그다음 칠한 글자 (겹치면 나중에 칠한 것).
+        private func hit(_ v: InkTextView, _ p: CGPoint) -> Highlight? {
+            if let r = v.memoRange(at: p), let h = located.last(where: { $0.range == r })?.highlight { return h }
+            let i = index(v, p)
+            return located.last(where: { NSLocationInRange(i, $0.range) || NSLocationInRange(i - 1, $0.range) })?.highlight
+        }
+
+        @objc func openTap(_ g: UITapGestureRecognizer) {
+            guard let v = g.view as? InkTextView, let h = hit(v, g.location(in: v)) else { return }
+            parent?.context.openMemo(h.id)
         }
         private var shown: NSAttributedString?
 
@@ -199,12 +229,9 @@ struct HighlightText: UIViewRepresentable {
         }
 
         @objc func tap(_ g: UITapGestureRecognizer) {
-            guard let v = g.view as? UITextView else { return }
-            let i = index(v, g.location(in: v))
-            // 누른 글자를 덮는 형광펜 중 가장 위(나중에 칠한 것)를 지운다.
-            if let hit = located.last(where: { NSLocationInRange(i, $0.range) || NSLocationInRange(i - 1, $0.range) }) {
-                parent?.context.remove(hit.highlight.id)
-            }
+            // 형광펜 모드: 누른 글자를 덮는 형광펜 중 가장 위(나중에 칠한 것)를 지운다.
+            guard let v = g.view as? InkTextView, let h = hit(v, g.location(in: v)) else { return }
+            parent?.context.remove(h.id)
         }
 
         // 손가락으로 글을 고르면 메뉴에 "형광펜" / "형광펜 지우기"를 넣는다.
@@ -218,6 +245,12 @@ struct HighlightText: UIViewRepresentable {
                 v?.selectedRange = NSRange(location: 0, length: 0)
             }]
             let overlapping = located.filter { NSIntersectionRange($0.range, range).length > 0 }
+            if let first = overlapping.last {
+                actions.append(UIAction(title: first.highlight.memo == nil ? "메모 달기" : "메모 보기", image: UIImage(systemName: "note.text")) { [weak v] _ in
+                    parent.context.openMemo(first.highlight.id)
+                    v?.selectedRange = NSRange(location: 0, length: 0)
+                })
+            }
             if !overlapping.isEmpty {
                 actions.append(UIAction(title: "형광펜 지우기", attributes: .destructive) { [weak v] _ in
                     overlapping.forEach { parent.context.remove($0.highlight.id) }
@@ -252,6 +285,18 @@ final class InkTextView: UITextView {
     }
 
     var bands: [(NSRange, UIColor)] = [] { didSet { setNeedsLayout() } }
+    /// 메모가 달린 형광펜 범위. 마지막 띠 끝에 작은 메모 표시를 단다.
+    var memos: [NSRange] = [] { didSet { if oldValue != memos { setNeedsLayout() } } }
+    private var memoIcons: [(range: NSRange, rect: CGRect)] = []
+    private static let memoImage: CGImage? = UIImage(systemName: "note.text",
+                                                     withConfiguration: UIImage.SymbolConfiguration(pointSize: 11, weight: .bold))?
+        .withTintColor(.systemOrange, renderingMode: .alwaysOriginal)
+        .rendered()
+
+    /// 점이 메모 표시(누르기 쉽게 넓힌 영역)에 닿으면 그 형광펜 범위.
+    func memoRange(at p: CGPoint) -> NSRange? {
+        memoIcons.last { $0.rect.insetBy(dx: -10, dy: -10).contains(p) }?.range
+    }
     var live: (NSRange, UIColor)? { didSet { drawBands() } }
     var bandFont: UIFont = .preferredFont(forTextStyle: .body) { didSet { if oldValue != bandFont { setNeedsLayout() } } }
     /// 띠를 담는 보기. UITextView는 자기가 모르는 층(layer)을 떼어 내므로 층이 아니라 보기로 얹는다.
@@ -283,6 +328,20 @@ final class InkTextView: UITextView {
             shape.path = path.cgPath
             shape.fillColor = color.cgColor
             bandLayer.addSublayer(shape)
+        }
+        memoIcons = []
+        for range in memos {
+            guard let last = rects(for: range).last, let image = Self.memoImage else { continue }
+            let size = CGSize(width: image.width, height: image.height).applying(.init(scaleX: 1 / traitCollection.displayScale, y: 1 / traitCollection.displayScale))
+            // 각주 표시처럼 띠 오른쪽 위 모서리에 걸쳐 단다 (다음 글자를 가리지 않게).
+            let x = min(last.maxX - size.width * 0.35, bounds.width - size.width * 0.5)
+            let rect = CGRect(x: x, y: last.minY - size.height * 0.75, width: size.width, height: size.height)
+            let icon = CALayer()
+            icon.contents = image
+            icon.contentsScale = traitCollection.displayScale
+            icon.frame = rect
+            bandLayer.addSublayer(icon)
+            memoIcons.append((range, rect))
         }
         CATransaction.commit()
     }
@@ -319,5 +378,13 @@ final class InkTextView: UITextView {
         if on, !types.contains(pencil) { types.append(pencil) }
         if !on { types.removeAll { $0 == pencil } }
         if types != pan.allowedTouchTypes { pan.allowedTouchTypes = types }
+    }
+}
+
+private extension UIImage {
+    /// 기호 이미지를 색을 입힌 비트맵으로 굽는다 (CALayer.contents에 쓰기 위해).
+    func rendered() -> CGImage? {
+        let r = UIGraphicsImageRenderer(size: size)
+        return r.image { _ in draw(at: .zero) }.cgImage
     }
 }

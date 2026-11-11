@@ -22,6 +22,10 @@ struct NoteReaderView: View {
     @State private var tool: Tool = .read
     private var inking: Bool { tool == .ink }
     @AppStorage("highlight.color") private var highlightColor: HighlightColor = .yellow
+    /// 메모 창을 연 형광펜.
+    @State private var memoTarget: Highlight?
+    /// 메모가 달려 있어 지우기 전에 묻는 형광펜.
+    @State private var confirmRemove: Highlight?
     @State private var toolPicker = PKToolPicker()
     @State private var readerWidth: CGFloat = 0
 
@@ -117,6 +121,14 @@ struct NoteReaderView: View {
                 }
             }
             .onChange(of: current) { _, c in if restored { store.setLastSection(c, of: path) } }
+            .sheet(item: $memoTarget) { h in
+                if let ink { MemoSheet(highlight: h, ink: ink) { ink.remove(highlight: $0) } }
+            }
+            .confirmationDialog("메모가 달린 형광펜입니다. 메모도 함께 지울까요?",
+                                isPresented: Binding(get: { confirmRemove != nil }, set: { if !$0 { confirmRemove = nil } }),
+                                titleVisibility: .visible, presenting: confirmRemove) { h in
+                Button("형광펜과 메모 지우기", role: .destructive) { ink?.remove(highlight: h.id) }
+            } message: { _ in Text("지운 뒤에는 되돌릴 수 없습니다.") }
             .task(id: path) {
                 let target = heading.flatMap(doc.sectionIndex(forHeading:)) ?? store.lastSection(of: path)
                 try? await Task.sleep(for: .milliseconds(50))
@@ -165,7 +177,11 @@ struct NoteReaderView: View {
         let texts = Self.paragraphTexts(s.blocks)
         let placed = Highlight.resolve(highlights, paragraphs: texts).mapValues { (text: texts[$0.paragraph], range: $0.range) }
         return HighlightContext(section: key, highlights: highlights, placed: placed, marking: tool == .highlight,
-                                color: highlightColor, add: { ink.add($0) }, remove: { ink.remove(highlight: $0) })
+                                color: highlightColor, add: { ink.add($0) },
+                                remove: { id in
+                                    if let h = ink.highlight(id), h.memo != nil { confirmRemove = h } else { ink.remove(highlight: id) }
+                                },
+                                openMemo: { id in memoTarget = ink.highlight(id) })
     }
 
     /// 절 안의 문단 글(목록·인용 안 포함)을 화면에 그리는 글과 같은 모양으로 순서대로 모은다.

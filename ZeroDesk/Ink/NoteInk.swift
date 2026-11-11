@@ -55,6 +55,15 @@ final class NoteInk {
         scheduleSave()
     }
 
+    func highlight(_ id: UUID) -> Highlight? { file.highlights.first { $0.id == id } }
+
+    /// 메모를 달거나 고치거나(`memo`), 없앤다(`nil`).
+    func setMemo(_ memo: HighlightMemo?, for id: UUID) {
+        guard state == .ready, let i = file.highlights.firstIndex(where: { $0.id == id }) else { return }
+        file.highlights[i].memo = memo
+        scheduleSave()
+    }
+
     func remove(highlight id: UUID) {
         guard state == .ready else { return }
         file.highlights.removeAll { $0.id == id }

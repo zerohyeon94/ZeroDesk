@@ -24,6 +24,7 @@
 		B5031FAEF300F3924E03BB90 /* StudyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372559A6DADA29FB78C6C7CD /* StudyView.swift */; };
 		B669541149D7520C7D68F447 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8538575727021B417050653 /* SettingsView.swift */; };
 		CBECD6A50F6D636A360F9670 /* MonoGridTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9B745D9A7E495409A54451F /* MonoGridTests.swift */; };
+		CC0FC8EC95CE35A06B07B28F /* MemoSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6BF7F5ADBE08E21519B99BD /* MemoSheet.swift */; };
 		D36D1ED4FD8AF633651612BC /* SwiftUINames.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96A75E03785D12D597E33AD /* SwiftUINames.swift */; };
 		D5B586E08F3DC02CD750023B /* DailyCardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96BFF92A0EEB5D29852E44F /* DailyCardsView.swift */; };
 		E8636E713BF2B4F9A79D569A /* FileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6495655B1BA09334D7C321EF /* FileView.swift */; };
@@ -59,6 +60,7 @@
 		83A7AAE2F0F4C97ECDAEC42E /* NoteInk.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteInk.swift; sourceTree = "<group>"; };
 		8C30BFAE6F12C0B36B9E7C14 /* MonoGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonoGrid.swift; sourceTree = "<group>"; };
 		9A1EED4748F25CB35517C9B3 /* ZeroDeskCore */ = {isa = PBXFileReference; lastKnownFileType = folder; name = ZeroDeskCore; path = Packages/ZeroDeskCore; sourceTree = SOURCE_ROOT; };
+		A6BF7F5ADBE08E21519B99BD /* MemoSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoSheet.swift; sourceTree = "<group>"; };
 		A8538575727021B417050653 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		BAB70B76D4160D0A30E99236 /* InlineText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlineText.swift; sourceTree = "<group>"; };
 		BF4A922AEE95641E610A171D /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
@@ -146,6 +148,7 @@
 			children = (
 				3F96F317CAAFF66FE132CB73 /* HighlightText.swift */,
 				37AF7B76B157F1BA02B9BA23 /* InkCanvas.swift */,
+				A6BF7F5ADBE08E21519B99BD /* MemoSheet.swift */,
 				83A7AAE2F0F4C97ECDAEC42E /* NoteInk.swift */,
 			);
 			path = Ink;
@@ -318,6 +321,7 @@
 				3A511BC00F1E5B816C5429AE /* HomeView.swift in Sources */,
 				F415C3C4DBE68DE991BAC9D1 /* InkCanvas.swift in Sources */,
 				42307BF1EA9F06EAB012CCA0 /* InlineText.swift in Sources */,
+				CC0FC8EC95CE35A06B07B28F /* MemoSheet.swift in Sources */,
 				8285AAA2E057C16AAF45CE7F /* MonoGrid.swift in Sources */,
 				261593F3E71B190E85D38297 /* NoteInk.swift in Sources */,
 				634099E1C585B5D496B768F5 /* NoteReaderView.swift in Sources */,

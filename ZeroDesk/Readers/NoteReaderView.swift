@@ -18,15 +18,23 @@ struct NoteReaderView: View {
     @Environment(\.scenePhase) private var scenePhase
     @State private var ink: NoteInk?
     /// 읽기 / 형광펜 / 자유 필기 중 하나.
-    enum Tool { case read, highlight, ink }
+    /// 읽기 / 형광펜 / 펜 / 지우개. Apple 기본 도구 막대 대신 위 막대에서 고른다.
+    enum Tool { case read, highlight, pen, erase }
     @State private var tool: Tool = .read
-    private var inking: Bool { tool == .ink }
+    @AppStorage("pen.color") private var penColor: PenColor = .black
+    /// 필기 층의 도구.
+    private var inkMode: InkMode {
+        switch tool {
+        case .pen: .pen(penColor)
+        case .erase: .erase
+        default: .view
+        }
+    }
     @AppStorage("highlight.color") private var highlightColor: HighlightColor = .yellow
     /// 메모 창을 연 형광펜.
     @State private var memoTarget: Highlight?
     /// 메모가 달려 있어 지우기 전에 묻는 형광펜.
     @State private var confirmRemove: Highlight?
-    @State private var toolPicker = PKToolPicker()
     @State private var readerWidth: CGFloat = 0
 
     /// 본문 폭(680pt)이 고정되는 넓이에서만 필기를 쓴다. 폭이 바뀌면 줄 바뀜이 달라져 필기가 어긋나기 때문.
@@ -79,7 +87,7 @@ struct NoteReaderView: View {
                 if titled.count > 1 { sectionBar(proxy) }
             }
             .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { readerWidth = $0 }
-            .onChange(of: inkAvailable) { _, ok in if !ok, tool == .ink { tool = .read } }
+            .onChange(of: inkAvailable) { _, ok in if !ok, tool == .pen { tool = .read } }
             .onChange(of: scenePhase) { _, p in if p != .active { Task { await ink?.flush() } } }
             .onDisappear { Task { [ink] in await ink?.flush() } }
             .task(id: path) {
@@ -89,35 +97,7 @@ struct NoteReaderView: View {
             }
             .toolbar {
                 if let ink {
-                    ToolbarItemGroup(placement: .primaryAction) {
-                        if tool == .highlight {
-                            Menu {
-                                Picker("색", selection: $highlightColor) {
-                                    ForEach(HighlightColor.allCases, id: \.self) { c in
-                                        Label(c.label, systemImage: "circle.fill").tint(c.swatch).tag(c)
-                                    }
-                                }
-                            } label: {
-                                Image(systemName: "circle.fill").foregroundStyle(highlightColor.swatch)
-                            }
-                            .accessibilityLabel("형광펜 색: \(highlightColor.label)")
-                        }
-                        Button { tool = tool == .highlight ? .read : .highlight } label: {
-                            Image(systemName: "highlighter").symbolVariant(tool == .highlight ? .fill : .none)
-                                .foregroundStyle(tool == .highlight ? AnyShapeStyle(highlightColor.swatch) : AnyShapeStyle(.tint))
-                        }
-                        .disabled(ink.state != .ready)
-                        .accessibilityLabel(tool == .highlight ? "형광펜 끝내기" : "형광펜")
-                    }
-                }
-                if inkAvailable, let ink {
-                    ToolbarItem(placement: .primaryAction) {
-                        Button { tool = tool == .ink ? .read : .ink } label: {
-                            Image(systemName: inking ? "pencil.tip.crop.circle.fill" : "pencil.tip.crop.circle")
-                        }
-                        .disabled(ink.state != .ready)
-                        .accessibilityLabel(ink.state == .failed ? "필기를 읽지 못함" : inking ? "필기 끝내기" : "필기하기")
-                    }
+                    ToolbarItemGroup(placement: .primaryAction) { toolButtons(ink) }
                 }
             }
             .onChange(of: current) { _, c in if restored { store.setLastSection(c, of: path) } }
@@ -150,8 +130,7 @@ struct NoteReaderView: View {
             VStack(alignment: .leading, spacing: 10) {
                 section
                     .overlay {
-                        InkCanvas(data: data, editing: inking, stale: stale, focused: s.id == current,
-                                  toolPicker: toolPicker) { d, bytes in
+                        InkCanvas(data: data, mode: inkMode, stale: stale) { d, bytes in
                             ink.set(d, data: bytes, key: key, hash: hash, layout: inkLayout)
                         }
                     }
@@ -170,13 +149,55 @@ struct NoteReaderView: View {
         }
     }
 
+    /// 위 막대의 도구: [색] 형광펜 · 펜 · 지우개. 다시 누르면 읽기로 돌아간다.
+    /// 펜은 본문 폭이 고정되는 넓은 화면에서만 보인다. 지우개는 형광펜도 지우므로 늘 보인다.
+    @ViewBuilder private func toolButtons(_ ink: NoteInk) -> some View {
+        let ready = ink.state == .ready
+        if tool == .highlight {
+            Menu {
+                Picker("형광펜 색", selection: $highlightColor) {
+                    ForEach(HighlightColor.allCases, id: \.self) { c in
+                        Label(c.label, systemImage: "circle.fill").tint(c.swatch).tag(c)
+                    }
+                }
+            } label: { Image(systemName: "circle.fill").foregroundStyle(highlightColor.swatch) }
+            .accessibilityLabel("형광펜 색: \(highlightColor.label)")
+        }
+        if tool == .pen {
+            Menu {
+                Picker("펜 색", selection: $penColor) {
+                    ForEach(PenColor.allCases, id: \.self) { c in
+                        Label(c.label, systemImage: "circle.fill").tint(c.swatch).tag(c)
+                    }
+                }
+            } label: { Image(systemName: "circle.fill").foregroundStyle(penColor.swatch) }
+            .accessibilityLabel("펜 색: \(penColor.label)")
+        }
+        toolButton(.highlight, icon: "highlighter", label: "형광펜", tint: highlightColor.swatch).disabled(!ready)
+        if inkAvailable {
+            toolButton(.pen, icon: "pencil.tip", label: "펜", tint: penColor.swatch).disabled(!ready)
+        }
+        toolButton(.erase, icon: "eraser", label: "지우개", tint: .pink).disabled(!ready)
+    }
+
+    private func toolButton(_ t: Tool, icon: String, label: String, tint: Color) -> some View {
+        let on = tool == t
+        return Button { tool = on ? .read : t } label: {
+            Image(systemName: icon).symbolVariant(on ? .fill : .none)
+                .foregroundStyle(on ? AnyShapeStyle(tint) : AnyShapeStyle(.secondary))
+                .padding(4)
+                .background(on ? AnyShapeStyle(tint.opacity(0.15)) : AnyShapeStyle(.clear), in: .circle)
+        }
+        .accessibilityLabel(on ? "\(label) 끝내기" : label)
+    }
+
     /// 형광펜은 글자에 붙으므로 화면 폭과 상관없이(iPhone 포함) 보인다.
     private func highlightContext(_ key: String, _ s: NoteSection) -> HighlightContext? {
         guard let ink, ink.state == .ready else { return nil }
         let highlights = ink.highlights(in: key)
         let texts = Self.paragraphTexts(s.blocks)
         let placed = Highlight.resolve(highlights, paragraphs: texts).mapValues { (text: texts[$0.paragraph], range: $0.range) }
-        return HighlightContext(section: key, highlights: highlights, placed: placed, marking: tool == .highlight,
+        return HighlightContext(section: key, highlights: highlights, placed: placed, marking: tool == .highlight, erasing: tool == .erase,
                                 color: highlightColor, add: { ink.add($0) },
                                 remove: { id in
                                     if let h = ink.highlight(id), h.memo != nil { confirmRemove = h } else { ink.remove(highlight: id) }

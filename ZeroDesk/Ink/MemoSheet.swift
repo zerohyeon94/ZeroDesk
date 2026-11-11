@@ -12,7 +12,8 @@ struct MemoSheet: View {
     @Environment(\.dismiss) private var dismiss
     @State private var text: String
     @State private var drawing: Data?
-    @State private var toolPicker = PKToolPicker()
+    @State private var erasing = false
+    @AppStorage("pen.color") private var penColor: PenColor = .black
     @State private var confirm: Confirm?
     @State private var discarded = false
 
@@ -45,8 +46,25 @@ struct MemoSheet: View {
                         .padding(10)
                         .background(.secondary.opacity(0.08), in: .rect(cornerRadius: 8))
                     VStack(alignment: .leading, spacing: 6) {
-                        Text("손글씨 (Pencil)").font(.footnote).foregroundStyle(.secondary)
-                        InkCanvas(data: drawing, editing: true, stale: false, focused: false, toolPicker: toolPicker) { d, bytes in
+                        HStack(spacing: 14) {
+                            Text("손글씨 (Pencil)").font(.footnote).foregroundStyle(.secondary)
+                            Spacer()
+                            // Apple 기본 도구 막대 대신: 펜 색 셋 + 지우개
+                            ForEach(PenColor.allCases, id: \.self) { c in
+                                Button { penColor = c; erasing = false } label: {
+                                    Circle().fill(c.swatch).frame(width: 22, height: 22)
+                                        .overlay(Circle().stroke(.primary.opacity(!erasing && penColor == c ? 0.8 : 0), lineWidth: 2).padding(-4))
+                                }
+                                .accessibilityLabel("펜 \(c.label)")
+                            }
+                            Button { erasing.toggle() } label: {
+                                Image(systemName: "eraser").symbolVariant(erasing ? .fill : .none)
+                                    .foregroundStyle(erasing ? AnyShapeStyle(.pink) : AnyShapeStyle(.secondary))
+                            }
+                            .accessibilityLabel(erasing ? "지우개 끝내기" : "지우개")
+                        }
+                        .buttonStyle(.plain)
+                        InkCanvas(data: drawing, mode: erasing ? .erase : .pen(penColor), stale: false) { d, bytes in
                             drawing = d.strokes.isEmpty ? nil : bytes
                         }
                         .frame(height: 280)

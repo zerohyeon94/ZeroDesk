@@ -10,8 +10,10 @@ struct HighlightContext {
     var highlights: [Highlight]
     /// 형광펜마다 고른 문단 글과 자리 (`Highlight.resolve`). 이 문단 글과 같은 것만 칠한다.
     var placed: [UUID: (text: String, range: NSRange)]
-    /// 형광펜 모드: Pencil로 글자를 그어 칠하고, 칠한 곳을 누르면 지운다.
+    /// 형광펜 도구: Pencil로 글자를 그어 칠한다.
     var marking: Bool
+    /// 지우개 도구: 칠한 곳을 누르면 그 형광펜을 지운다.
+    var erasing: Bool
     var color: HighlightColor
     var add: (Highlight) -> Void
     /// 형광펜 지우기 (메모가 달려 있으면 읽기 화면이 먼저 묻는다).
@@ -76,8 +78,8 @@ struct HighlightText: UIViewRepresentable {
         pan.delegate = ctx.coordinator
         pan.allowedTouchTypes = touchTypes
         pan.maximumNumberOfTouches = 1
+        // 지우개: 손가락·Pencil 모두 누르면 지운다.
         let tap = UITapGestureRecognizer(target: ctx.coordinator, action: #selector(Coordinator.tap(_:)))
-        tap.allowedTouchTypes = touchTypes
         // 읽기 모드: 칠한 곳이나 메모 표시를 누르면 메모 창을 연다 (손가락·Pencil 모두). 다른 곳은 링크·글 고르기가 받는다.
         let open = UITapGestureRecognizer(target: ctx.coordinator, action: #selector(Coordinator.openTap(_:)))
         open.delegate = ctx.coordinator
@@ -103,8 +105,8 @@ struct HighlightText: UIViewRepresentable {
             return (range: p.range, highlight: h)
         }
         c.pan?.isEnabled = context.marking
-        c.tap?.isEnabled = context.marking
-        c.open?.isEnabled = !context.marking
+        c.tap?.isEnabled = context.erasing
+        c.open?.isEnabled = !context.marking && !context.erasing
         c.render(v)
         v.bands = c.located.map { ($0.range, $0.highlight.color.uiColor) }
         v.memos = c.located.filter { $0.highlight.memo != nil }.map(\.range)
@@ -229,7 +231,7 @@ struct HighlightText: UIViewRepresentable {
         }
 
         @objc func tap(_ g: UITapGestureRecognizer) {
-            // 형광펜 모드: 누른 글자를 덮는 형광펜 중 가장 위(나중에 칠한 것)를 지운다.
+            // 지우개: 누른 글자를 덮는 형광펜 중 가장 위(나중에 칠한 것)를 지운다.
             guard let v = g.view as? InkTextView, let h = hit(v, g.location(in: v)) else { return }
             parent?.context.remove(h.id)
         }

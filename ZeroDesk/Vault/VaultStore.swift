@@ -152,6 +152,19 @@ final class VaultStore {
         return try await access.readData(path, root: root)
     }
 
+    /// 파일이 없으면 `nil`. 있는데 못 읽으면 오류 (없는 것과 못 읽은 것을 구분해야 남의 필기를 덮어쓰지 않는다).
+    func dataIfExists(of path: String) async throws -> Data? {
+        guard let root else { throw VaultError.noFolder }
+        guard access.exists(path, root: root) else { return nil }
+        return try await access.readData(path, root: root)
+    }
+
+    func write(_ data: Data, to path: String) async throws {
+        guard let root else { throw VaultError.noFolder }
+        let access = access
+        try await Task.detached { try access.writeData(data, to: path, root: root) }.value
+    }
+
     func fileURL(_ path: String) -> URL? { root.map { access.fileURL(path, root: $0) } }
 
     func lastSection(of path: String) -> Int { access.defaults.integer(forKey: "lastSection." + path) }

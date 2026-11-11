@@ -1,7 +1,7 @@
 import Foundation
 
 enum VaultError: Error, Equatable {
-    case noFolder, accessLost, notDownloaded, unreadable
+    case noFolder, accessLost, notDownloaded, unreadable, unwritable
 }
 
 struct VaultFileInfo: Codable, Hashable, Sendable {
@@ -10,7 +10,7 @@ struct VaultFileInfo: Codable, Hashable, Sendable {
 }
 
 /// 볼트 폴더 접근: 북마크 저장·복원, 파일 목록, iCloud 내려받기 + 조정 읽기 (스펙 8).
-/// 볼트에는 절대 쓰지 않는다.
+/// 볼트의 노트에는 절대 쓰지 않는다. 쓰는 곳은 앱 전용 숨김 폴더 `.zerodesk/` 하나뿐이다 (Pencil 필기).
 // UserDefaults와 FileManager는 스레드 안전하다.
 final class VaultAccess: @unchecked Sendable {
     let defaults: UserDefaults
@@ -93,6 +93,28 @@ final class VaultAccess: @unchecked Sendable {
             if let d = try? Data(contentsOf: u) { result = .success(d) }
         }
         return try result.get()
+    }
+
+    /// 파일이 있는지. 아직 안 내려온 iCloud 자리표시(`.이름.icloud`)도 있는 것으로 센다.
+    func exists(_ relPath: String, root: URL) -> Bool {
+        let url = fileURL(relPath, root: root)
+        let placeholder = url.deletingLastPathComponent().appending(path: "." + url.lastPathComponent + ".icloud")
+        return FileManager.default.fileExists(atPath: url.path) || FileManager.default.fileExists(atPath: placeholder.path)
+    }
+
+    /// 앱 전용 숨김 폴더(`.zerodesk/`) 안에만 조정 쓰기를 한다. 노트 파일에는 쓰지 못하게 막는다.
+    func writeData(_ data: Data, to relPath: String, root: URL) throws {
+        guard relPath.hasPrefix(".zerodesk/"), !relPath.contains("..") else { throw VaultError.unwritable }
+        let url = fileURL(relPath, root: root)
+        do {
+            try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
+        } catch { throw VaultError.unwritable }
+        var coordError: NSError?
+        var ok = false
+        NSFileCoordinator().coordinate(writingItemAt: url, options: .forReplacing, error: &coordError) { u in
+            ok = (try? data.write(to: u, options: .atomic)) != nil
+        }
+        guard ok, coordError == nil else { throw VaultError.unwritable }
     }
 
     /// 로컬 사본이 전혀 없을 때만 기다린다. 옛 사본(.downloaded)은 바로 읽고 새 내용은 뒤에서 받는다.

@@ -73,29 +73,36 @@ struct NoteReaderView: View {
 
     private func sectionBar(_ proxy: ScrollViewProxy) -> some View {
         let pos = (titled.firstIndex { $0.id == current } ?? titled.lastIndex { $0.id < current } ?? 0)
-        return HStack(spacing: 8) {
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 6) {
-                    ForEach(Array(titled.enumerated()), id: \.element.id) { i, s in
-                        Button { withAnimation { proxy.scrollTo(s.id, anchor: .top) } } label: {
-                            Text("\(i + 1) \(s.title)").lineLimit(1).font(.footnote)
-                                .padding(.horizontal, 10).padding(.vertical, 5)
-                                .background(i == pos ? AnyShapeStyle(.tint.opacity(0.18)) : AnyShapeStyle(.clear), in: .capsule)
-                                .fontWeight(i == pos ? .semibold : .regular)
-                        }
-                        .buttonStyle(.plain)
-                    }
-                }
-            }
-            Text("\(pos + 1) / \(titled.count)").font(.footnote.monospacedDigit()).foregroundStyle(.secondary)
+        // 절 이름을 한 줄로 늘어놓지 않고 "지금 절" 하나와 얇은 진행 막대만 보인다. 누르면 절 목록이 열린다.
+        return VStack(spacing: 0) {
             Menu {
                 ForEach(Array(titled.enumerated()), id: \.element.id) { i, s in
-                    Button("\(i + 1). \(s.title)") { proxy.scrollTo(s.id, anchor: .top) }
+                    Button { withAnimation { proxy.scrollTo(s.id, anchor: .top) } } label: {
+                        if i == pos { Label("\(i + 1). \(s.title)", systemImage: "checkmark") } else { Text("\(i + 1). \(s.title)") }
+                    }
                 }
-            } label: { Image(systemName: "list.bullet") }
-            .accessibilityLabel("목차")
+            } label: {
+                HStack(spacing: 8) {
+                    Text("\(pos + 1) / \(titled.count)").monospacedDigit().foregroundStyle(.secondary)
+                    Text(titled.indices.contains(pos) ? titled[pos].title : "").fontWeight(.semibold).lineLimit(1)
+                    Image(systemName: "chevron.down").font(.caption2.weight(.semibold)).foregroundStyle(.secondary)
+                    Spacer(minLength: 0)
+                }
+                .font(.subheadline)
+                .frame(minHeight: 44)
+                .contentShape(.rect)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("절 \(pos + 1) / \(titled.count), 목차 열기")
+            .padding(.horizontal, 24)
+            .frame(maxWidth: 728)
+            .frame(maxWidth: .infinity)
+            GeometryReader { g in
+                Rectangle().fill(.tint).frame(width: g.size.width * CGFloat(pos + 1) / CGFloat(max(titled.count, 1)))
+                    .animation(.easeOut(duration: 0.2), value: pos)
+            }
+            .frame(height: 2)
         }
-        .padding(.horizontal, 16).padding(.vertical, 8)
         .background(.bar)
     }
 }

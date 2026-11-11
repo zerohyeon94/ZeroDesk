@@ -17,9 +17,11 @@ struct MonoGridTests {
     }
 
     @Test func hangulIsTwoCells() {
-        let cell = MonoGrid.width("M", MonoGrid.font)
+        let cell = MonoGrid.cell()
         // 자간 없이 그리면 한글이 2칸에 맞지 않는다 (고칠 문제가 실제로 있음)
         #expect(abs(MonoGrid.width("가", MonoGrid.font) - cell * 2) > 0.5)
+        // 칸을 좁혀 한글 사이 틈이 글자 폭의 25%를 넘지 않는다 (`카 메 라`처럼 벌어지지 않음)
+        #expect(cell * 2 - MonoGrid.width("가", MonoGrid.font) < MonoGrid.width("가", MonoGrid.font) * 0.25)
         #expect(abs(drawnWidth("가나다") - cell * 6) < 0.5)
         #expect(abs(drawnWidth("ab") - cell * 2) < 0.5)
         #expect(abs(drawnWidth("│ 엣지 ─") - cell * 8) < 0.5)

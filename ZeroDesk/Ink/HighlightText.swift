@@ -51,9 +51,8 @@ struct HighlightText: UIViewRepresentable {
 
     func makeCoordinator() -> Coordinator { Coordinator() }
 
-    func makeUIView(context ctx: Context) -> UITextView {
-        // 점 → 글자 위치를 정확히 재려고 TextKit 1(layoutManager)을 쓴다.
-        let v = UITextView(usingTextLayoutManager: false)
+    func makeUIView(context ctx: Context) -> InkTextView {
+        let v = InkTextView.make()
         v.isEditable = false
         v.isSelectable = true
         v.isScrollEnabled = false
@@ -82,7 +81,7 @@ struct HighlightText: UIViewRepresentable {
         return v
     }
 
-    func updateUIView(_ v: UITextView, context ctx: Context) {
+    func updateUIView(_ v: InkTextView, context ctx: Context) {
         let c = ctx.coordinator
         c.parent = self
         c.openURL = ctx.environment.openURL
@@ -97,9 +96,14 @@ struct HighlightText: UIViewRepresentable {
         c.pan?.isEnabled = context.marking
         c.tap?.isEnabled = context.marking
         c.render(v)
+        v.bands = c.located.map { ($0.range, $0.highlight.color.uiColor) }
+        v.bandFont = c.font
+        // 형광펜 모드에서는 Pencil로 화면이 스크롤되지 않게 한다 (칠하는 동안 글이 밀려 엉뚱한 곳이 칠해짐).
+        let marking = context.marking
+        DispatchQueue.main.async { [weak v] in v?.pencilScrolls(!marking) }
     }
 
-    func sizeThatFits(_ proposal: ProposedViewSize, uiView: UITextView, context: Context) -> CGSize? {
+    func sizeThatFits(_ proposal: ProposedViewSize, uiView: InkTextView, context: Context) -> CGSize? {
         guard let w = proposal.width, w.isFinite, w > 0 else { return nil }
         let s = uiView.sizeThatFits(CGSize(width: w, height: .greatestFiniteMagnitude))
         return CGSize(width: w, height: ceil(s.height))
@@ -125,17 +129,17 @@ struct HighlightText: UIViewRepresentable {
         }
         private var shown: NSAttributedString?
 
+        /// 글이나 글꼴이 바뀔 때만 글을 다시 놓는다. 형광펜 띠는 `InkTextView`가 따로 그린다.
         func render(_ v: UITextView) {
             guard let parent else { return }
-            let s = Self.build(parent.text, font: font, tint: tint, located: located, live: live.map { ($0, parent.context.color) })
+            let s = Self.build(parent.text, font: font, tint: tint)
             guard shown == nil || !s.isEqual(to: shown!) else { return }
             shown = s
             v.attributedText = s
             v.invalidateIntrinsicContentSize()
         }
 
-        static func build(_ text: AttributedString, font body: UIFont, tint: UIColor,
-                          located: [(range: NSRange, highlight: Highlight)], live: (NSRange, HighlightColor)?) -> NSAttributedString {
+        static func build(_ text: AttributedString, font body: UIFont, tint: UIColor) -> NSAttributedString {
             let para = NSMutableParagraphStyle()
             para.lineSpacing = 6
             let out = NSMutableAttributedString()
@@ -158,9 +162,6 @@ struct HighlightText: UIViewRepresentable {
                 if run.swiftUI.strikethroughStyle != nil { attrs[.strikethroughStyle] = NSUnderlineStyle.single.rawValue }
                 out.append(NSAttributedString(string: piece, attributes: attrs))
             }
-            let all = NSRange(location: 0, length: out.length)
-            for (r, h) in located { out.addAttribute(.backgroundColor, value: h.color.uiColor, range: NSIntersectionRange(r, all)) }
-            if let (r, c) = live { out.addAttribute(.backgroundColor, value: c.uiColor, range: NSIntersectionRange(r, all)) }
             return out
         }
 
@@ -175,7 +176,7 @@ struct HighlightText: UIViewRepresentable {
         }
 
         @objc func pan(_ g: UIPanGestureRecognizer) {
-            guard let v = g.view as? UITextView else { return }
+            guard let v = g.view as? InkTextView else { return }
             let i = index(v, g.location(in: v))
             switch g.state {
             case .began:
@@ -186,13 +187,15 @@ struct HighlightText: UIViewRepresentable {
             case .ended:
                 if let r = live, let parent, let h = Highlight.make(section: parent.context.section, paragraph: v.attributedText.string,
                                                                     range: r, color: parent.context.color) {
+                    v.bands.append((r, parent.context.color.uiColor))  // 저장된 형광펜이 돌아올 때까지 깜빡이지 않게
                     parent.context.add(h)
                 }
                 live = nil
             default:
                 live = nil
             }
-            render(v)
+            // 긋는 동안에는 글을 다시 놓지 않고 띠만 다시 그린다 (바로 따라오게).
+            v.live = live.flatMap { r in parent.map { (r, $0.context.color.uiColor) } }
         }
 
         @objc func tap(_ g: UITapGestureRecognizer) {
@@ -229,5 +232,92 @@ struct HighlightText: UIViewRepresentable {
             guard case let .link(url) = textItem.content else { return defaultAction }
             return UIAction { [weak self] _ in self?.openURL?(url) }
         }
+    }
+}
+
+/// 형광펜 띠를 글 위에 직접 그리는 문단 보기.
+/// 글자 배경색(backgroundColor)은 줄 간격까지 덮어 띠가 두껍고 아래로 처져 보이므로 쓰지 않는다.
+/// 띠는 줄마다 글자 높이(기준선 위 대문자 높이 + 조금)에 맞춘 둥근 사각형이다.
+final class InkTextView: UITextView {
+    /// 점 → 글자 위치를 정확히 재려고 TextKit 1(layoutManager)을 직접 짜서 넘긴다.
+    /// `init(usingTextLayoutManager:)`는 하위 클래스의 저장 속성을 만들지 않으므로 쓰지 않는다.
+    static func make() -> InkTextView {
+        let storage = NSTextStorage()
+        let layout = NSLayoutManager()
+        let container = NSTextContainer(size: CGSize(width: 0, height: CGFloat.greatestFiniteMagnitude))
+        container.widthTracksTextView = true
+        layout.addTextContainer(container)
+        storage.addLayoutManager(layout)
+        return InkTextView(frame: .zero, textContainer: container)
+    }
+
+    var bands: [(NSRange, UIColor)] = [] { didSet { setNeedsLayout() } }
+    var live: (NSRange, UIColor)? { didSet { drawBands() } }
+    var bandFont: UIFont = .preferredFont(forTextStyle: .body) { didSet { if oldValue != bandFont { setNeedsLayout() } } }
+    /// 띠를 담는 보기. UITextView는 자기가 모르는 층(layer)을 떼어 내므로 층이 아니라 보기로 얹는다.
+    private let bandView: UIView = {
+        let v = UIView()
+        v.isUserInteractionEnabled = false
+        v.backgroundColor = .clear
+        return v
+    }()
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        drawBands()
+    }
+
+    private func drawBands() {
+        // 띠는 글 위에 얹는다 (반투명이라 글자가 비쳐 보임).
+        if bandView.superview !== self { addSubview(bandView) }
+        if subviews.last !== bandView { bringSubviewToFront(bandView) }
+        let bandLayer = bandView.layer
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        bandView.frame = CGRect(origin: .zero, size: contentSize == .zero ? bounds.size : CGSize(width: bounds.width, height: max(bounds.height, contentSize.height)))
+        bandLayer.sublayers?.forEach { $0.removeFromSuperlayer() }
+        for (range, color) in bands + (live.map { [$0] } ?? []) {
+            let path = UIBezierPath()
+            for r in rects(for: range) { path.append(UIBezierPath(roundedRect: r, cornerRadius: 3)) }
+            let shape = CAShapeLayer()
+            shape.path = path.cgPath
+            shape.fillColor = color.cgColor
+            bandLayer.addSublayer(shape)
+        }
+        CATransaction.commit()
+    }
+
+    /// 범위가 걸친 줄마다 띠 하나. 높이는 글꼴에서 정해 굵은 글씨·일반 글씨가 섞여도 같다.
+    private func rects(for range: NSRange) -> [CGRect] {
+        let lm = layoutManager
+        let all = NSRange(location: 0, length: textStorage.length)
+        let chars = NSIntersectionRange(range, all)
+        guard chars.length > 0 else { return [] }
+        let glyphs = lm.glyphRange(forCharacterRange: chars, actualCharacterRange: nil)
+        let cap = bandFont.capHeight
+        var out: [CGRect] = []
+        lm.enumerateLineFragments(forGlyphRange: glyphs) { line, _, container, lineGlyphs, _ in
+            let g = NSIntersectionRange(lineGlyphs, glyphs)
+            guard g.length > 0 else { return }
+            let box = lm.boundingRect(forGlyphRange: g, in: container)
+            let baseline = line.minY + lm.location(forGlyphAt: g.location).y
+            let top = baseline - cap * 1.2
+            let bottom = baseline + cap * 0.3
+            out.append(CGRect(x: box.minX - 1, y: top, width: box.width + 2, height: bottom - top)
+                .offsetBy(dx: self.textContainerInset.left, dy: self.textContainerInset.top))
+        }
+        return out
+    }
+
+    /// 감싼 스크롤 화면이 Pencil 끌기로 스크롤할지.
+    func pencilScrolls(_ on: Bool) {
+        var view = superview
+        while let v = view, !(v is UIScrollView) { view = v.superview }
+        guard let pan = (view as? UIScrollView)?.panGestureRecognizer else { return }
+        let pencil = UITouch.TouchType.pencil.rawValue as NSNumber
+        var types = pan.allowedTouchTypes
+        if on, !types.contains(pencil) { types.append(pencil) }
+        if !on { types.removeAll { $0 == pencil } }
+        if types != pan.allowedTouchTypes { pan.allowedTouchTypes = types }
     }
 }

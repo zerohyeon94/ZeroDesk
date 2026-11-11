@@ -7,6 +7,7 @@ struct NoteReaderView: View {
     let path: String
     var heading: String?
     @Environment(VaultStore.self) private var store
+    @Environment(\.dynamicTypeSize) private var typeSize
     @State private var current = 0
     /// 절 위치는 화면을 다시 그리지 않도록 참조 상자에 둔다 (스크롤 매 프레임 갱신).
     @State private var tops = Tops()
@@ -37,6 +38,8 @@ struct NoteReaderView: View {
                             }
                     }
                 }
+                // 본문은 시스템 글자 크기보다 한 단계 크게 (기본 17pt → 19pt). 시스템 설정을 바꾸면 함께 따라간다.
+                .dynamicTypeSize(typeSize.oneLarger)
                 .padding(.horizontal, 24).padding(.vertical, 20)
                 .frame(maxWidth: 728, alignment: .leading)
                 .frame(maxWidth: .infinity)
@@ -104,5 +107,14 @@ struct NoteReaderView: View {
             .frame(height: 2)
         }
         .background(.bar)
+    }
+}
+
+extension DynamicTypeSize {
+    /// 한 단계 큰 글자 크기 (가장 큰 단계면 그대로).
+    var oneLarger: DynamicTypeSize {
+        let all = DynamicTypeSize.allCases
+        guard let i = all.firstIndex(of: self), i + 1 < all.count else { return self }
+        return all[i + 1]
     }
 }

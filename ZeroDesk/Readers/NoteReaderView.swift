@@ -30,7 +30,8 @@ struct NoteReaderView: View {
     private var inkAvailable: Bool { readerWidth >= Self.inkMinWidth }
     /// 그린 때의 글자 배치. 글자 크기가 바뀌면 필기가 어긋났다고 본다.
     /// `tk`: 문단을 TextKit으로 그리기 시작한 뒤의 배치 (그 전 필기는 위치가 다를 수 있음).
-    private var inkLayout: String { "680|\(typeSize.oneLarger)|tk" }
+    private var inkLayout: String { "680|\(readingSize)|tk" }
+    private var readingSize: DynamicTypeSize { typeSize.larger(by: 2) }
 
     /// 화면 위에서 100pt 안으로 올라온 마지막 절이 지금 절이다.
     static func currentSection(_ tops: [Int: CGFloat]) -> Int {
@@ -64,8 +65,8 @@ struct NoteReaderView: View {
                             }
                     }
                 }
-                // 본문은 시스템 글자 크기보다 한 단계 크게 (기본 17pt → 19pt). 시스템 설정을 바꾸면 함께 따라간다.
-                .dynamicTypeSize(typeSize.oneLarger)
+                // 본문은 시스템 글자 크기보다 두 단계 크게 (기본 17pt → 21pt). 시스템 설정을 바꾸면 함께 따라간다.
+                .dynamicTypeSize(readingSize)
                 .padding(.horizontal, 24).padding(.vertical, 20)
                 .frame(maxWidth: 728, alignment: .leading)
                 .frame(maxWidth: .infinity)
@@ -229,10 +230,10 @@ struct NoteReaderView: View {
 }
 
 extension DynamicTypeSize {
-    /// 한 단계 큰 글자 크기 (가장 큰 단계면 그대로).
-    var oneLarger: DynamicTypeSize {
+    /// `n`단계 큰 글자 크기 (가장 큰 단계를 넘지 않음).
+    func larger(by n: Int) -> DynamicTypeSize {
         let all = DynamicTypeSize.allCases
-        guard let i = all.firstIndex(of: self), i + 1 < all.count else { return self }
-        return all[i + 1]
+        guard let i = all.firstIndex(of: self) else { return self }
+        return all[min(i + n, all.count - 1)]
     }
 }

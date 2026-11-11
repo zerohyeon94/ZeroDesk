@@ -7,6 +7,17 @@ import Foundation
 public struct InkFile: Codable, Equatable, Sendable {
     public var version = 1
     public var sections: [String: SectionInk] = [:]
+    /// 글자에 붙는 형광펜. 나중에 칠한 것이 위에 보인다.
+    public var highlights: [Highlight] = []
+
+    enum CodingKeys: String, CodingKey { case version, sections, highlights }
+
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        version = try c.decodeIfPresent(Int.self, forKey: .version) ?? 1
+        sections = try c.decodeIfPresent([String: SectionInk].self, forKey: .sections) ?? [:]
+        highlights = try c.decodeIfPresent([Highlight].self, forKey: .highlights) ?? []
+    }
 
     public struct SectionInk: Codable, Equatable, Sendable {
         /// 그린 때의 절 내용 지문.

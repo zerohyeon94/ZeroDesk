@@ -56,6 +56,22 @@ struct HighlightTests {
         #expect(h.locate(in: "본사가 내려보낸 것") == nil)
     }
 
+    @Test func memoIsOptionalAndRoundTrips() throws {
+        let old = #"{"highlights":[{"id":"6F9619FF-8B86-D011-B42D-00C04FC964FF","section":"비유","quote":"가","prefix":"","suffix":"","color":"yellow"}],"sections":{},"version":1}"#
+        let f = try InkFile.decode(Data(old.utf8))
+        #expect(f.highlights.first?.memo == nil)
+        var g = f
+        g.highlights[0].memo = HighlightMemo(text: "핵심", drawing: Data([7, 8]))
+        #expect(try InkFile.decode(g.encoded()) == g)
+    }
+
+    @Test func emptyMemo() {
+        #expect(HighlightMemo(text: "  \n").isEmpty)
+        #expect(HighlightMemo(text: "", drawing: Data()).isEmpty)
+        #expect(!HighlightMemo(text: "", drawing: Data([1])).isEmpty)
+        #expect(!HighlightMemo(text: "a").isEmpty)
+    }
+
     @Test func oldInkFileWithoutHighlightsDecodes() throws {
         let old = #"{"sections":{},"version":1}"#
         #expect(try InkFile.decode(Data(old.utf8)).highlights.isEmpty)

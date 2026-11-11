@@ -11,14 +11,18 @@ public struct Highlight: Codable, Equatable, Hashable, Sendable, Identifiable {
     public var prefix: String
     public var suffix: String
     public var color: HighlightColor
+    /// 형광펜에 단 메모 (손글씨·글). 없으면 `nil`. 메모가 없는 예전 파일도 그대로 읽힌다.
+    public var memo: HighlightMemo?
 
-    public init(id: UUID = UUID(), section: String, quote: String, prefix: String, suffix: String, color: HighlightColor) {
+    public init(id: UUID = UUID(), section: String, quote: String, prefix: String, suffix: String, color: HighlightColor,
+                memo: HighlightMemo? = nil) {
         self.id = id
         self.section = section
         self.quote = quote
         self.prefix = prefix
         self.suffix = suffix
         self.color = color
+        self.memo = memo
     }
 
     /// 앞뒤로 함께 적어 두는 글 길이 (UTF-16).
@@ -86,6 +90,20 @@ public struct Highlight: Codable, Equatable, Hashable, Sendable, Identifiable {
     static func commonPrefix(_ a: String, _ b: String) -> Int {
         zip(a.utf16, b.utf16).prefix { $0 == $1 }.count
     }
+}
+
+/// 형광펜 메모: 키보드로 쓴 글과 Pencil 손글씨(`PKDrawing.dataRepresentation()`)를 함께 둘 수 있다.
+public struct HighlightMemo: Codable, Equatable, Hashable, Sendable {
+    public var text: String
+    public var drawing: Data?
+
+    public init(text: String = "", drawing: Data? = nil) {
+        self.text = text
+        self.drawing = drawing
+    }
+
+    /// 글도 손글씨도 없으면 빈 메모 (저장하지 않는다).
+    public var isEmpty: Bool { text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && (drawing?.isEmpty ?? true) }
 }
 
 public enum HighlightColor: String, Codable, CaseIterable, Sendable {

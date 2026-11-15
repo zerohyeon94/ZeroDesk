@@ -82,9 +82,13 @@ final class VaultStore {
     var index = VaultIndex(paths: [])
     var home: HomeSnapshot?
     var lastRefresh: Date?
+    /// GitHub에서 받지 못한 이유. 받아 둔 사본은 계속 보여 준다.
+    var syncProblem: String?
+    var readsGitHub = false
 
     @ObservationIgnored let access: VaultAccess
     @ObservationIgnored private(set) var root: URL?
+    @ObservationIgnored private var mirror: GitHubMirror? { didSet { readsGitHub = mirror != nil } }
     @ObservationIgnored private var refreshing = false
 
     init(access: VaultAccess = .init()) { self.access = access }
@@ -93,11 +97,32 @@ final class VaultStore {
         URL.applicationSupportDirectory.appending(path: "snapshot.json")
     }
 
+    // MARK: 읽는 곳: iCloud 폴더 또는 GitHub
+
+    static let defaultRepo = "zerohyeon94/zerohyeon-labs"
+    private static let mirrorRoot = URL.applicationSupportDirectory.appending(path: "github/vault")
+    var githubRepo: String { access.defaults.string(forKey: "githubRepo") ?? Self.defaultRepo }
+
+    /// 설정에서 GitHub로 바꾼다. 토큰은 Keychain에만 둔다.
+    func useGitHub(repo: String, token: String) async {
+        guard TokenStore.save(token) else { syncProblem = "토큰을 저장하지 못함"; return }
+        access.defaults.set(repo, forKey: "githubRepo")
+        access.defaults.set("github", forKey: "vaultSource")
+        mirror = GitHubMirror(root: Self.mirrorRoot, repo: repo, token: token)
+        root = Self.mirrorRoot
+        phase = .loading
+        await refresh()
+    }
+
     func start() async {
         if let data = try? Data(contentsOf: snapshotURL), let snap = try? JSONDecoder().decode(Snapshot.self, from: data) {
             apply(files: snap.files)
             home = snap.home
             phase = .ready
+        }
+        if access.defaults.string(forKey: "vaultSource") == "github", let token = TokenStore.load() {
+            mirror = GitHubMirror(root: Self.mirrorRoot, repo: githubRepo, token: token)
+            root = Self.mirrorRoot
         }
         #if DEBUG
         // 시뮬레이터 확인용: -vaultPath <경로>
@@ -112,9 +137,13 @@ final class VaultStore {
         await refresh()
     }
 
+    /// iCloud 폴더를 고르면 iCloud에서 읽는다. 받아 둔 GitHub 사본은 지우지 않는다 (다시 바꾸면 바뀐 것만 받는다).
     func pick(folder: URL) async {
         do {
             try access.save(folder: folder)
+            access.defaults.set("icloud", forKey: "vaultSource")
+            mirror = nil
+            syncProblem = nil
             root = try access.restore()
             phase = .loading
             await refresh()
@@ -128,6 +157,16 @@ final class VaultStore {
         guard !refreshing else { return }
         refreshing = true
         defer { refreshing = false }
+        if let mirror {
+            do {
+                try await mirror.sync()
+                syncProblem = nil
+            } catch {
+                syncProblem = (error as? MirrorError)?.message ?? "GitHub에서 받지 못함"
+                // 받아 둔 사본이 하나도 없으면 보여 줄 것이 없다
+                if mirror.loadState().shas.isEmpty { phase = .failed(syncProblem ?? ""); return }
+            }
+        }
         let access = access
         do {
             let list = try await Task.detached { try access.listFiles(in: root) }.value

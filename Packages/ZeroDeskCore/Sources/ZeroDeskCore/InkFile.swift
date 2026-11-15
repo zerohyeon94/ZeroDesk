@@ -1,7 +1,7 @@
 import CryptoKit
 import Foundation
 
-/// 노트 하나의 Pencil 필기. md 파일은 건드리지 않고 볼트 숨김 폴더 `.zerodesk/필기/`에 따로 둔다.
+/// 노트 하나의 Pencil 필기. md 파일은 건드리지 않고 앱 전용 iCloud 공간의 `.zerodesk/필기/`에 따로 둔다.
 /// 필기는 절마다 따로 저장한다. 그린 때의 절 내용(`hash`)과 글자 배치(`layout`)를 함께 적어 두고,
 /// 지금과 다르면 필기 위치가 어긋났을 수 있다고 알린다.
 public struct InkFile: Codable, Equatable, Sendable {

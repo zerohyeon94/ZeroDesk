@@ -3,7 +3,7 @@ import Observation
 import PencilKit
 import ZeroDeskCore
 
-/// 노트 하나의 필기를 읽고, 바뀌면 잠시 뒤 볼트 숨김 폴더에 저장한다.
+/// 노트 하나의 필기를 읽고, 바뀌면 잠시 뒤 앱 전용 iCloud 공간에 저장한다 (InkStorage).
 @Observable @MainActor
 final class NoteInk {
     enum State: Equatable { case loading, ready, failed }

@@ -16,6 +16,7 @@
 		603E9D30EC085621FE78DB2B /* GitHubMirrorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EEC8E7D289FF799F8C219B8 /* GitHubMirrorTests.swift */; };
 		634099E1C585B5D496B768F5 /* NoteReaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8BB81E8DB2E6BC7A33A59B6 /* NoteReaderView.swift */; };
 		637AEAC4530A25CE4D2389B7 /* VaultAccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37E31110F1963C692E99A299 /* VaultAccess.swift */; };
+		65DF4A5FC51CB26F9A875742 /* InkStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 449DFE8439A038B9831649E0 /* InkStorageTests.swift */; };
 		7DA2C2723AEDC9A920DAD2F2 /* ReviewFixTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED590A8BCFEADF62A191B96A /* ReviewFixTests.swift */; };
 		8285AAA2E057C16AAF45CE7F /* MonoGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C30BFAE6F12C0B36B9E7C14 /* MonoGrid.swift */; };
 		926DBC9BCA6A291256C5F570 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20545B01CD23AFFA9651547D /* RootView.swift */; };
@@ -32,6 +33,7 @@
 		EDF48264211997416E130F34 /* HighlightText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F96F317CAAFF66FE132CB73 /* HighlightText.swift */; };
 		F37689443AE60AA4DD1A6CDD /* QueueProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E1981416E11E356AD482AC /* QueueProgressView.swift */; };
 		F415C3C4DBE68DE991BAC9D1 /* InkCanvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37AF7B76B157F1BA02B9BA23 /* InkCanvas.swift */; };
+		F84D01357195246346F1D0A3 /* InkStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E1768CFFF349DC2A2052872 /* InkStorage.swift */; };
 		FD67E5D0F5742CFA4DB7FBD9 /* FileBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74D4206D41017093237D4137 /* FileBrowserView.swift */; };
 		FEA2EF7B090BB261242626C3 /* GitHubMirror.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3A4EA4A30E928B7F3B21F72 /* GitHubMirror.swift */; };
 /* End PBXBuildFile section */
@@ -49,6 +51,7 @@
 /* Begin PBXFileReference section */
 		0EEC8E7D289FF799F8C219B8 /* GitHubMirrorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitHubMirrorTests.swift; sourceTree = "<group>"; };
 		20545B01CD23AFFA9651547D /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		2E1768CFFF349DC2A2052872 /* InkStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InkStorage.swift; sourceTree = "<group>"; };
 		304EF460ED3135A52419487A /* ZeroDesk.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = ZeroDesk.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		372559A6DADA29FB78C6C7CD /* StudyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudyView.swift; sourceTree = "<group>"; };
 		37AF7B76B157F1BA02B9BA23 /* InkCanvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InkCanvas.swift; sourceTree = "<group>"; };
@@ -56,6 +59,7 @@
 		3F96F317CAAFF66FE132CB73 /* HighlightText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HighlightText.swift; sourceTree = "<group>"; };
 		424CEC74F64B16C342E0F297 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		439F27B2B4C2F019A1AFEA1B /* VaultStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VaultStore.swift; sourceTree = "<group>"; };
+		449DFE8439A038B9831649E0 /* InkStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InkStorageTests.swift; sourceTree = "<group>"; };
 		6495655B1BA09334D7C321EF /* FileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileView.swift; sourceTree = "<group>"; };
 		664C8274E24556112089EB40 /* PaneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaneView.swift; sourceTree = "<group>"; };
 		74D4206D41017093237D4137 /* FileBrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileBrowserView.swift; sourceTree = "<group>"; };
@@ -65,6 +69,7 @@
 		9A1EED4748F25CB35517C9B3 /* ZeroDeskCore */ = {isa = PBXFileReference; lastKnownFileType = folder; name = ZeroDeskCore; path = Packages/ZeroDeskCore; sourceTree = SOURCE_ROOT; };
 		A6BF7F5ADBE08E21519B99BD /* MemoSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoSheet.swift; sourceTree = "<group>"; };
 		A8538575727021B417050653 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		B78BFE57BCDC5EB206A8C63D /* ZeroDesk.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ZeroDesk.entitlements; sourceTree = "<group>"; };
 		BAB70B76D4160D0A30E99236 /* InlineText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlineText.swift; sourceTree = "<group>"; };
 		BF4A922AEE95641E610A171D /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		C5DC6763D9FEFB501CBEA5B6 /* ZeroDeskApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZeroDeskApp.swift; sourceTree = "<group>"; };
@@ -170,6 +175,7 @@
 			isa = PBXGroup;
 			children = (
 				0EEC8E7D289FF799F8C219B8 /* GitHubMirrorTests.swift */,
+				449DFE8439A038B9831649E0 /* InkStorageTests.swift */,
 				F9B745D9A7E495409A54451F /* MonoGridTests.swift */,
 				ED590A8BCFEADF62A191B96A /* ReviewFixTests.swift */,
 				E0A77995EC741F690F86099F /* VaultAccessTests.swift */,
@@ -199,6 +205,7 @@
 			isa = PBXGroup;
 			children = (
 				D3A4EA4A30E928B7F3B21F72 /* GitHubMirror.swift */,
+				2E1768CFFF349DC2A2052872 /* InkStorage.swift */,
 				37E31110F1963C692E99A299 /* VaultAccess.swift */,
 				439F27B2B4C2F019A1AFEA1B /* VaultStore.swift */,
 			);
@@ -219,6 +226,7 @@
 			isa = PBXGroup;
 			children = (
 				424CEC74F64B16C342E0F297 /* Info.plist */,
+				B78BFE57BCDC5EB206A8C63D /* ZeroDesk.entitlements */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -310,6 +318,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				603E9D30EC085621FE78DB2B /* GitHubMirrorTests.swift in Sources */,
+				65DF4A5FC51CB26F9A875742 /* InkStorageTests.swift in Sources */,
 				CBECD6A50F6D636A360F9670 /* MonoGridTests.swift in Sources */,
 				7DA2C2723AEDC9A920DAD2F2 /* ReviewFixTests.swift in Sources */,
 				998A895699AA21933BBF4B51 /* VaultAccessTests.swift in Sources */,
@@ -328,6 +337,7 @@
 				EDF48264211997416E130F34 /* HighlightText.swift in Sources */,
 				3A511BC00F1E5B816C5429AE /* HomeView.swift in Sources */,
 				F415C3C4DBE68DE991BAC9D1 /* InkCanvas.swift in Sources */,
+				F84D01357195246346F1D0A3 /* InkStorage.swift in Sources */,
 				42307BF1EA9F06EAB012CCA0 /* InlineText.swift in Sources */,
 				CC0FC8EC95CE35A06B07B28F /* MemoSheet.swift in Sources */,
 				8285AAA2E057C16AAF45CE7F /* MonoGrid.swift in Sources */,
@@ -436,6 +446,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = ZeroDesk/Resources/ZeroDesk.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 5G6N83PM9C;
@@ -537,6 +548,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = ZeroDesk/Resources/ZeroDesk.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 5G6N83PM9C;

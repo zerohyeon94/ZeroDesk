@@ -203,15 +203,33 @@ final class VaultStore {
         return try await access.readData(path, root: root)
     }
 
+    // MARK: 필기: 볼트가 아니라 앱 전용 iCloud 공간 (InkStorage)
+
+    @ObservationIgnored private var inkRootTask: Task<URL, Never>?
+
+    /// 처음 부를 때 필기 위치를 찾고, 예전 위치(볼트·GitHub 사본·기기 안)의 필기를 옮겨 온다.
+    private func inkRoot() async -> URL {
+        if let inkRootTask { return await inkRootTask.value }
+        let access = access
+        let olds = [root, try? access.restore(), Self.mirrorRoot, InkStorage.localRoot].compactMap { $0 }
+        let task = Task.detached {
+            let new = InkStorage.root()
+            await InkStorage.migrate(from: olds, to: new, access: access)
+            return new
+        }
+        inkRootTask = task
+        return await task.value
+    }
+
     /// 파일이 없으면 `nil`. 있는데 못 읽으면 오류 (없는 것과 못 읽은 것을 구분해야 남의 필기를 덮어쓰지 않는다).
     func dataIfExists(of path: String) async throws -> Data? {
-        guard let root else { throw VaultError.noFolder }
+        let root = await inkRoot()
         guard access.exists(path, root: root) else { return nil }
         return try await access.readData(path, root: root)
     }
 
     func write(_ data: Data, to path: String) async throws {
-        guard let root else { throw VaultError.noFolder }
+        let root = await inkRoot()
         let access = access
         try await Task.detached { try access.writeData(data, to: path, root: root) }.value
     }

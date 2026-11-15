@@ -10,7 +10,7 @@ struct VaultFileInfo: Codable, Hashable, Sendable {
 }
 
 /// 볼트 폴더 접근: 북마크 저장·복원, 파일 목록, iCloud 내려받기 + 조정 읽기 (스펙 8).
-/// 볼트의 노트에는 절대 쓰지 않는다. 쓰는 곳은 앱 전용 숨김 폴더 `.zerodesk/` 하나뿐이다 (Pencil 필기).
+/// 볼트의 노트에는 절대 쓰지 않는다. 쓰기(`writeData`)는 `.zerodesk/` 아래만 허용하고, 필기를 앱 전용 iCloud 공간에 쓸 때 쓴다.
 // UserDefaults와 FileManager는 스레드 안전하다.
 final class VaultAccess: @unchecked Sendable {
     let defaults: UserDefaults

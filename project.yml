@@ -24,6 +24,16 @@ targets:
       - ZeroDesk
     dependencies:
       - package: ZeroDeskCore
+    entitlements:
+      path: ZeroDesk/Resources/ZeroDesk.entitlements
+      properties:
+        # 필기를 두는 앱 전용 iCloud 공간 (InkStorage.containerID)
+        com.apple.developer.icloud-container-identifiers:
+          - iCloud.com.zerohyeon.zerodesk
+        com.apple.developer.icloud-services:
+          - CloudDocuments
+        com.apple.developer.ubiquity-container-identifiers:
+          - iCloud.com.zerohyeon.zerodesk
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.zerohyeon.zerodesk

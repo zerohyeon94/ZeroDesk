@@ -13,6 +13,7 @@
 		3A511BC00F1E5B816C5429AE /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF4A922AEE95641E610A171D /* HomeView.swift */; };
 		42307BF1EA9F06EAB012CCA0 /* InlineText.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB70B76D4160D0A30E99236 /* InlineText.swift */; };
 		47FCCC41CF542448C14A0ABC /* BlocksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79C48DBCF9A3AA5BE8319237 /* BlocksView.swift */; };
+		603E9D30EC085621FE78DB2B /* GitHubMirrorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EEC8E7D289FF799F8C219B8 /* GitHubMirrorTests.swift */; };
 		634099E1C585B5D496B768F5 /* NoteReaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8BB81E8DB2E6BC7A33A59B6 /* NoteReaderView.swift */; };
 		637AEAC4530A25CE4D2389B7 /* VaultAccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37E31110F1963C692E99A299 /* VaultAccess.swift */; };
 		7DA2C2723AEDC9A920DAD2F2 /* ReviewFixTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED590A8BCFEADF62A191B96A /* ReviewFixTests.swift */; };
@@ -32,6 +33,7 @@
 		F37689443AE60AA4DD1A6CDD /* QueueProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E1981416E11E356AD482AC /* QueueProgressView.swift */; };
 		F415C3C4DBE68DE991BAC9D1 /* InkCanvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37AF7B76B157F1BA02B9BA23 /* InkCanvas.swift */; };
 		FD67E5D0F5742CFA4DB7FBD9 /* FileBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74D4206D41017093237D4137 /* FileBrowserView.swift */; };
+		FEA2EF7B090BB261242626C3 /* GitHubMirror.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3A4EA4A30E928B7F3B21F72 /* GitHubMirror.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -45,6 +47,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0EEC8E7D289FF799F8C219B8 /* GitHubMirrorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitHubMirrorTests.swift; sourceTree = "<group>"; };
 		20545B01CD23AFFA9651547D /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		304EF460ED3135A52419487A /* ZeroDesk.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = ZeroDesk.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		372559A6DADA29FB78C6C7CD /* StudyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudyView.swift; sourceTree = "<group>"; };
@@ -67,6 +70,7 @@
 		C5DC6763D9FEFB501CBEA5B6 /* ZeroDeskApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZeroDeskApp.swift; sourceTree = "<group>"; };
 		C8BB81E8DB2E6BC7A33A59B6 /* NoteReaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteReaderView.swift; sourceTree = "<group>"; };
 		C96BFF92A0EEB5D29852E44F /* DailyCardsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyCardsView.swift; sourceTree = "<group>"; };
+		D3A4EA4A30E928B7F3B21F72 /* GitHubMirror.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitHubMirror.swift; sourceTree = "<group>"; };
 		D563629360D5D08E6FB4045D /* ZeroDeskTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = ZeroDeskTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D9E1981416E11E356AD482AC /* QueueProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueueProgressView.swift; sourceTree = "<group>"; };
 		E0A77995EC741F690F86099F /* VaultAccessTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VaultAccessTests.swift; sourceTree = "<group>"; };
@@ -165,6 +169,7 @@
 		D797E08E58BBA7A2802B1AD6 /* ZeroDeskTests */ = {
 			isa = PBXGroup;
 			children = (
+				0EEC8E7D289FF799F8C219B8 /* GitHubMirrorTests.swift */,
 				F9B745D9A7E495409A54451F /* MonoGridTests.swift */,
 				ED590A8BCFEADF62A191B96A /* ReviewFixTests.swift */,
 				E0A77995EC741F690F86099F /* VaultAccessTests.swift */,
@@ -193,6 +198,7 @@
 		EB04743475590DDAB305087F /* Vault */ = {
 			isa = PBXGroup;
 			children = (
+				D3A4EA4A30E928B7F3B21F72 /* GitHubMirror.swift */,
 				37E31110F1963C692E99A299 /* VaultAccess.swift */,
 				439F27B2B4C2F019A1AFEA1B /* VaultStore.swift */,
 			);
@@ -276,7 +282,6 @@
 				};
 			};
 			buildConfigurationList = 82EE4E56F80FE798A79DE5C9 /* Build configuration list for PBXProject "ZeroDesk" */;
-			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -289,6 +294,7 @@
 				1021BF60B1B385050C2AC424 /* XCLocalSwiftPackageReference "Packages/ZeroDeskCore" */,
 			);
 			preferredProjectObjectVersion = 77;
+			productRefGroup = 9F10EC8373E07A74777A90D6 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -303,6 +309,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				603E9D30EC085621FE78DB2B /* GitHubMirrorTests.swift in Sources */,
 				CBECD6A50F6D636A360F9670 /* MonoGridTests.swift in Sources */,
 				7DA2C2723AEDC9A920DAD2F2 /* ReviewFixTests.swift in Sources */,
 				998A895699AA21933BBF4B51 /* VaultAccessTests.swift in Sources */,
@@ -317,6 +324,7 @@
 				D5B586E08F3DC02CD750023B /* DailyCardsView.swift in Sources */,
 				FD67E5D0F5742CFA4DB7FBD9 /* FileBrowserView.swift in Sources */,
 				E8636E713BF2B4F9A79D569A /* FileView.swift in Sources */,
+				FEA2EF7B090BB261242626C3 /* GitHubMirror.swift in Sources */,
 				EDF48264211997416E130F34 /* HighlightText.swift in Sources */,
 				3A511BC00F1E5B816C5429AE /* HomeView.swift in Sources */,
 				F415C3C4DBE68DE991BAC9D1 /* InkCanvas.swift in Sources */,

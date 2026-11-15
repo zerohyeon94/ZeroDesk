@@ -18,7 +18,7 @@ struct RootView: View {
             case let .failed(message):
                 FolderPickView(message: message, retry: true)
             case .loading where store.home == nil:
-                ProgressView("iCloud에서 받는 중")
+                ProgressView(store.readsGitHub ? "GitHub에서 받는 중" : "iCloud에서 받는 중")
             default:
                 TabView(selection: $tab) {
                     Tab("홈", systemImage: "house", value: 0) {
@@ -63,6 +63,7 @@ private struct FolderPickView: View {
     let message: String
     var retry = false
     @Environment(VaultStore.self) private var store
+    @State private var github = false
 
     var body: some View {
         ContentUnavailableView {
@@ -71,7 +72,15 @@ private struct FolderPickView: View {
             Text(message)
         } actions: {
             FolderPickButton().buttonStyle(.borderedProminent)
+            Button("GitHub에서 읽기") { github = true }
             if retry { Button("다시 시도") { Task { await store.refresh() } } }
+        }
+        .sheet(isPresented: $github) {
+            NavigationStack {
+                Form { GitHubSection { github = false } }
+                    .navigationTitle("GitHub에서 읽기")
+                    .toolbar { Button("닫기") { github = false } }
+            }
         }
     }
 }

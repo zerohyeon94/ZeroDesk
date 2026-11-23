@@ -10,6 +10,9 @@ struct HomeSnapshot: Codable, Equatable {
     var yearGoal: String?
     var schedule: ScheduleFile?
     var scheduleMissing: Bool
+    /// 오늘 Daily 경로와 거기서 읽은 진행. `daily == nil`은 파일이 아직 없음.
+    var dailyPath: String? = nil
+    var daily: DailyProgress? = nil
 
     static let queuePath = "Schedule/학습 대기열.md"
     static let schedulePath = "Schedule/주요 일정.md"
@@ -18,8 +21,11 @@ struct HomeSnapshot: Codable, Equatable {
     /// 이번 달 것일 때만 대기열 숫자를 준다 (월초 지난 값이 이번 달처럼 보이지 않게).
     func month(for key: String) -> QueueMonth? { month?.month == key ? month : nil }
 
+    /// 오늘 Daily 것일 때만 준다 (자정 뒤 어제 것이 오늘처럼 보이지 않게).
+    func daily(for path: String) -> DailyProgress? { dailyPath == path ? daily : nil }
+
     /// 읽기 실패(iCloud·오프라인)는 형식 오류와 다르다. `previous`가 있으면 그 칸의 지난 값을 유지한다.
-    static func make(paths: [String], month: String, previous: HomeSnapshot? = nil,
+    static func make(paths: [String], month: String, dailyPath: String? = nil, previous: HomeSnapshot? = nil,
                      read: @Sendable (String) async throws -> String) async -> HomeSnapshot {
         var s = HomeSnapshot(month: nil, monthSectionMissing: false, queueUnreadable: false,
                              yearGoal: nil, schedule: nil, scheduleMissing: !paths.contains(schedulePath))
@@ -44,6 +50,11 @@ struct HomeSnapshot: Codable, Equatable {
             if let text = try? await read(schedulePath) { s.schedule = ScheduleFile.parse(text) }
             else if let previous { (s.schedule, s.scheduleMissing) = (previous.schedule, previous.scheduleMissing) }
             else { s.scheduleMissing = true }
+        }
+        if let dailyPath, paths.contains(dailyPath) {
+            s.dailyPath = dailyPath
+            if let text = try? await read(dailyPath) { s.daily = DailyProgress.parse(text) }
+            else { s.daily = previous?.daily(for: dailyPath) ?? DailyProgress() }  // 지난 값이 없으면 읽을 수 없음
         }
         return s
     }
@@ -71,9 +82,13 @@ final class VaultStore {
     var index = VaultIndex(paths: [])
     var home: HomeSnapshot?
     var lastRefresh: Date?
+    /// GitHub에서 받지 못한 이유. 받아 둔 사본은 계속 보여 준다.
+    var syncProblem: String?
+    var readsGitHub = false
 
     @ObservationIgnored let access: VaultAccess
     @ObservationIgnored private(set) var root: URL?
+    @ObservationIgnored private var mirror: GitHubMirror? { didSet { readsGitHub = mirror != nil } }
     @ObservationIgnored private var refreshing = false
 
     init(access: VaultAccess = .init()) { self.access = access }
@@ -82,11 +97,32 @@ final class VaultStore {
         URL.applicationSupportDirectory.appending(path: "snapshot.json")
     }
 
+    // MARK: 읽는 곳: iCloud 폴더 또는 GitHub
+
+    static let defaultRepo = "zerohyeon94/zerohyeon-labs"
+    private static let mirrorRoot = URL.applicationSupportDirectory.appending(path: "github/vault")
+    var githubRepo: String { access.defaults.string(forKey: "githubRepo") ?? Self.defaultRepo }
+
+    /// 설정에서 GitHub로 바꾼다. 토큰은 Keychain에만 둔다.
+    func useGitHub(repo: String, token: String) async {
+        guard TokenStore.save(token) else { syncProblem = "토큰을 저장하지 못함"; return }
+        access.defaults.set(repo, forKey: "githubRepo")
+        access.defaults.set("github", forKey: "vaultSource")
+        mirror = GitHubMirror(root: Self.mirrorRoot, repo: repo, token: token)
+        root = Self.mirrorRoot
+        phase = .loading
+        await refresh()
+    }
+
     func start() async {
         if let data = try? Data(contentsOf: snapshotURL), let snap = try? JSONDecoder().decode(Snapshot.self, from: data) {
             apply(files: snap.files)
             home = snap.home
             phase = .ready
+        }
+        if access.defaults.string(forKey: "vaultSource") == "github", let token = TokenStore.load() {
+            mirror = GitHubMirror(root: Self.mirrorRoot, repo: githubRepo, token: token)
+            root = Self.mirrorRoot
         }
         #if DEBUG
         // 시뮬레이터 확인용: -vaultPath <경로>
@@ -101,9 +137,13 @@ final class VaultStore {
         await refresh()
     }
 
+    /// iCloud 폴더를 고르면 iCloud에서 읽는다. 받아 둔 GitHub 사본은 지우지 않는다 (다시 바꾸면 바뀐 것만 받는다).
     func pick(folder: URL) async {
         do {
             try access.save(folder: folder)
+            access.defaults.set("icloud", forKey: "vaultSource")
+            mirror = nil
+            syncProblem = nil
             root = try access.restore()
             phase = .loading
             await refresh()
@@ -117,13 +157,24 @@ final class VaultStore {
         guard !refreshing else { return }
         refreshing = true
         defer { refreshing = false }
+        if let mirror {
+            do {
+                try await mirror.sync()
+                syncProblem = nil
+            } catch {
+                syncProblem = (error as? MirrorError)?.message ?? "GitHub에서 받지 못함"
+                // 받아 둔 사본이 하나도 없으면 보여 줄 것이 없다
+                if mirror.loadState().shas.isEmpty { phase = .failed(syncProblem ?? ""); return }
+            }
+        }
         let access = access
         do {
             let list = try await Task.detached { try access.listFiles(in: root) }.value
             apply(files: list)
             let t = todayKST()
             let month = String(format: "%04d-%02d", t.year ?? 0, t.month ?? 0)
-            home = await HomeSnapshot.make(paths: list.map(\.path), month: month, previous: home) { path in
+            let daily = DailyProgress.path(year: t.year ?? 0, month: t.month ?? 0, day: t.day ?? 0)
+            home = await HomeSnapshot.make(paths: list.map(\.path), month: month, dailyPath: daily, previous: home) { path in
                 try await access.readText(path, root: root)
             }
             phase = .ready
@@ -150,6 +201,37 @@ final class VaultStore {
     func data(of path: String) async throws -> Data {
         guard let root else { throw VaultError.noFolder }
         return try await access.readData(path, root: root)
+    }
+
+    // MARK: 필기: 볼트가 아니라 앱 전용 iCloud 공간 (InkStorage)
+
+    @ObservationIgnored private var inkRootTask: Task<URL, Never>?
+
+    /// 처음 부를 때 필기 위치를 찾고, 예전 위치(볼트·GitHub 사본·기기 안)의 필기를 옮겨 온다.
+    private func inkRoot() async -> URL {
+        if let inkRootTask { return await inkRootTask.value }
+        let access = access
+        let olds = [root, try? access.restore(), Self.mirrorRoot, InkStorage.localRoot].compactMap { $0 }
+        let task = Task.detached {
+            let new = InkStorage.root()
+            await InkStorage.migrate(from: olds, to: new, access: access)
+            return new
+        }
+        inkRootTask = task
+        return await task.value
+    }
+
+    /// 파일이 없으면 `nil`. 있는데 못 읽으면 오류 (없는 것과 못 읽은 것을 구분해야 남의 필기를 덮어쓰지 않는다).
+    func dataIfExists(of path: String) async throws -> Data? {
+        let root = await inkRoot()
+        guard access.exists(path, root: root) else { return nil }
+        return try await access.readData(path, root: root)
+    }
+
+    func write(_ data: Data, to path: String) async throws {
+        let root = await inkRoot()
+        let access = access
+        try await Task.detached { try access.writeData(data, to: path, root: root) }.value
     }
 
     func fileURL(_ path: String) -> URL? { root.map { access.fileURL(path, root: $0) } }

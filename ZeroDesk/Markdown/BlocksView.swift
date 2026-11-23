@@ -22,6 +22,7 @@ private struct BlockView: View {
     /// 목록·인용 안이면 굵은 글씨 문단 배경을 넣지 않는다 (카드 안 상자 겹침 방지).
     var nested = true
     @Environment(VaultStore.self) private var store
+    @Environment(\.highlightContext) private var highlight
 
     var body: some View {
         switch markup {
@@ -65,8 +66,14 @@ private struct BlockView: View {
         }
     }
 
-    private func text(_ m: Markup) -> some View {
-        Text(inlineText(m, index: store.index)).lineSpacing(6).fixedSize(horizontal: false, vertical: true)
+    /// 노트 읽기 화면(형광펜 정보가 있을 때)은 글자 위치를 아는 TextKit 문단으로, 나머지 화면은 `Text`로 그린다.
+    @ViewBuilder private func text(_ m: Markup) -> some View {
+        let a = inlineText(m, index: store.index)
+        if let highlight {
+            HighlightText(text: a, context: highlight)
+        } else {
+            Text(a).lineSpacing(6).fixedSize(horizontal: false, vertical: true)
+        }
     }
 }
 
